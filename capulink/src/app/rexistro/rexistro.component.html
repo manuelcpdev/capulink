@@ -1,0 +1,56 @@
+<div class="host-centrado">
+  <h2 id="subtitulo">Rexistrarse</h2>
+
+  <form [formGroup]="rexistro" #form="ngForm" (ngSubmit)="autenticacion.rexistrarUsuario(rexistro)">
+    <!--Input nome de usuario-->
+    <label>Usuario</label>
+    <input type="text" formControlName="usuario">
+
+    <div class="form-erros-container">
+      <ng-container *ngIf="usuario?.invalid && (usuario?.dirty || usuario?.touched)">
+        <span *ngIf="usuario?.errors?.['required']">
+          O usuario non pode estar baleiro
+        </span>
+      </ng-container>
+    </div>
+
+
+
+    <!--Input email-->
+    <label>Email</label>
+    <input type="email" formControlName="email">
+
+    <div class="form-erros-container">
+      <ng-container *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+        <span *ngIf="email?.errors?.['required']">
+          O email non pode estar baleiro
+        </span>
+        <span *ngIf="email?.errors?.['email']">
+          O email non está ben formado
+        </span>
+      </ng-container>
+    </div>
+
+
+
+    <!--Input contrasinal-->
+    <label>Contrasinal</label>
+    <input type="password" formControlName="contrasinal">
+
+    <div class="form-erros-container">
+      <ng-container *ngIf="contrasinal?.invalid && (contrasinal?.dirty || contrasinal?.touched)">
+        <span *ngIf="contrasinal?.errors?.['required']">
+          O contrasinal non pode estar baleiro
+        </span>
+        <span *ngIf="contrasinal?.errors?.['minlength']">
+          O contrasinal debe ter polo menos 6 caracteres
+        </span>
+      </ng-container>
+    </div>
+
+
+
+    <input type="submit" [disabled]="!form.valid ? true : false" value="Crear usuario">
+  </form>
+
+</div>

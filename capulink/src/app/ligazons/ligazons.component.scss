@@ -1,0 +1,10 @@
+@import '../../styles.scss';
+
+:host {
+  @extend .host-centrado;
+  justify-content: left;
+}
+
+#ligazons-gardadas {
+
+}

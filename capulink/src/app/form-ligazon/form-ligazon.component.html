@@ -1,0 +1,33 @@
+<form id="form-ligazon" [formGroup]="formulario">
+  <label>Título</label>
+  <input type="text" formControlName="titulo">
+  <div *ngIf="formulario.get('titulo')?.invalid && formulario.get('titulo')?.touched">
+    {{ obterMensaxeError('titulo') }}
+  </div>
+
+  <label>URL</label>
+  <input type="text" formControlName="url">
+  <div *ngIf="formulario.get('url')?.invalid && formulario.get('url')?.touched">
+    {{ obterMensaxeError('url') }}
+  </div>
+
+  <label>Descripción</label>
+  <input type="text" formControlName="descripcion">
+
+  <div class="radio-contenedor">
+    <label>Agochar no perfil</label>
+    <span>Si</span><input type="radio" formControlName="agochado" value="true">
+    <span>Non</span><input type="radio" formControlName="agochado" value="false">
+  </div>
+
+  <div class="radio-contenedor">
+    <label>É apropiado</label>
+    <span>Si</span><input type="radio" formControlName="apropiado" value="true">
+    <span>Non</span><input type="radio" formControlName="apropiado" value="false">
+  </div>
+
+  <label>Etiquetas</label>
+  <input type="text" formControlName="etiquetas">
+
+  <input type="submit" [disabled]="formulario.invalid" value="Enviar">
+</form>

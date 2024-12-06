@@ -1,0 +1,35 @@
+#form-ligazon {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  color: var(--cor-texto-principal);
+
+  input[type=radio] {
+    display: inline;
+  }
+
+  .radio-contenedor {
+    label {
+      display: block;
+    }
+    input {
+      margin-left: 5px;
+      margin-right: 10px;
+    }
+  }
+}
+
+input[type=submit] {
+    margin-top: 10px;
+    border: 1px solid #077e26;
+    border-radius: 5px;
+    background-color: #7aee7a;
+    background-color: #89dfa2;
+    box-shadow: 0 0 #78b48c inset;
+    color: #000297;
+    cursor: pointer;
+    &:hover {
+      background-color: #7dd97d;
+    }
+}

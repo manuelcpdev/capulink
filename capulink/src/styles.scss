@@ -1,0 +1,132 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --cor-texto-principal: rgb(0, 0, 238);
+  --grosor-letra-principal: 400;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+* {
+  margin: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Herda a fonte do pai */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* Separa unha palabra se non hai espacio suficiente na mesma liña */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+#titulo, #subtitulo {
+  color: var(--cor-texto-principal);
+}
+
+.titulo-carta {
+  color: var(--cor-texto-principal);
+}
+
+.contenedor-centrado {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.host-centrado {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+}
+
+#contenedor-cartas {
+  display: flex;
+  justify-content: left;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-grow: 3;
+
+  width: 150%;
+
+  .carta {
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid;
+    border-radius: 5px;
+    width: 300px;
+
+    .titulo-carta {
+      border-bottom: 1px solid;
+    }
+
+    .contenedor-ligazons {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      gap: 15px;
+
+      h3 {
+        text-align: left;
+      }
+      p {
+        text-align: left;
+      }
+    }
+
+    .titulo-ligazon {
+      color: var(--cor-texto-principal);
+    }
+
+    * {
+      text-align: center;
+      width: 100%;
+    }
+
+  }
+
+}
+
+/*Estilo por defecto para formularios*/
+form {
+  display: flex;
+  flex-direction: column;
+
+  width: 50%;
+
+  input {
+    width: 100%;
+
+    /* Se o submit non está deshabilitado (disabled), o cursor pasa a ser a man que sinala */
+    &[type=submit]:enabled:hover  {
+      cursor: pointer;
+    }
+  }
+}
+.form-erros-container {
+  min-height: 25px;
+
+  color: #f00;
+}
