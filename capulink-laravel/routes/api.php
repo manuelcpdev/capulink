@@ -7,5 +7,5 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('rexistro', [RexistroController::class, 'store']);
-Route::get('rexistro', [RexistroController::class, 'index']);
+//Route::post('rexistro', [RexistroController::class, 'store']);
+//Route::get('rexistro', [RexistroController::class, 'index']);

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'admin'
     ];
 
     /**
@@ -45,5 +46,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function perfil()
+    {
+        return $this->hasOne(Perfil::class);
+    }
+
+    // Relación moitos a moitos cos grupos aos que pertence o usuario
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'usuario_grupo', 'user_id', 'grupo_id')
+            ->withTimestamps();
+    }
+
+    public function gruposCreados()
+    {
+        return $this->hasMany(Grupo::class, 'user_id');
+    }
+
+    public function ligazons()
+    {
+        return $this->belongsToMany(Ligazon::class, 'usuario_ligazon', 'user_id', 'ligazon_id')
+            ->withPivot('agochado', 'apropiado', 'descricion')
+            ->withTimestamps();
     }
 }
