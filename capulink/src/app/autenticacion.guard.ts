@@ -1,4 +1,4 @@
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AutenticacionService } from './autenticacion.service';
 import { inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 export const autenticacionGuard: CanActivateFn = (route, state) => {
   const autenticacion = inject(AutenticacionService);
   const http = inject(HttpClient);
+  const router = inject(Router);
   let rutasProhibidasConectado = [
     '/conexion',
     '/rexistro',
@@ -16,6 +17,7 @@ export const autenticacionGuard: CanActivateFn = (route, state) => {
     map(() => {
       // Se o usuario está conectado e tenta acceder ás rutas en rutasProhibidasConectado, bloqueamos o acceso
       if (rutasProhibidasConectado.includes(state.url)) {
+        router.navigate(['/']);
         return false; // Bloquear acceso
       }
       return true; // Permitir acceso

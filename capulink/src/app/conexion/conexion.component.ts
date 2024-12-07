@@ -25,8 +25,23 @@ export class ConexionComponent {
     return this.conexion.get('contrasinal');
   }
 
-  constructor(public autenticacion: AutenticacionService){
+  constructor(public autenticacion: AutenticacionService) {
     autenticacion.comprobarConexion();
   }
 
+  iniciarSesion(formulario: FormGroup) {
+    console.log('testing')
+    this.autenticacion.iniciarSesion(formulario)?.subscribe({
+      next(resposta) {
+        console.table(resposta)
+      },
+      error(resposta) {
+        console.table(resposta['error'])
+        console.log(resposta['error'])
+      },
+      complete() {
+        console.log('finalizou')
+      }
+    })
+  }
 }

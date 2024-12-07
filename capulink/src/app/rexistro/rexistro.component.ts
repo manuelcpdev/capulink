@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticacionService } from '../autenticacion.service';
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-rexistro',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf],
+  imports: [ReactiveFormsModule, NgIf, NgFor],
   templateUrl: './rexistro.component.html',
   styleUrl: './rexistro.component.scss'
 })
@@ -16,6 +16,8 @@ export class RexistroComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     contrasinal: new FormControl('', [Validators.required, Validators.minLength(6)]),
   })
+
+  errosServidor: { [key: string]: string[] } = {};
 
   get usuario() {
     return this.rexistro.get('usuario');
@@ -31,6 +33,20 @@ export class RexistroComponent {
 
   constructor(public autenticacion: AutenticacionService) {
 
+  }
+
+  rexistrarUsuario(formulario: FormGroup) {
+    this.autenticacion.rexistrarUsuario(formulario)?.subscribe({
+      next: (resposta) => {
+        console.log(resposta);
+      },
+      error: (resposta) => {
+        for (let key in resposta['error']) {
+          this.errosServidor[key] = resposta['error'][key]; // Array de erros por campo
+        }
+        console.log(this.errosServidor);
+      },
+    })
   }
 
 }

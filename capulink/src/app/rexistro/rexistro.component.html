@@ -1,7 +1,7 @@
 <div class="host-centrado">
   <h2 id="subtitulo">Rexistrarse</h2>
 
-  <form [formGroup]="rexistro" #form="ngForm" (ngSubmit)="autenticacion.rexistrarUsuario(rexistro)">
+  <form [formGroup]="rexistro" #form="ngForm" (ngSubmit)="rexistrarUsuario(rexistro)">
     <!--Input nome de usuario-->
     <label>Usuario</label>
     <input type="text" formControlName="usuario">
@@ -11,6 +11,9 @@
         <span *ngIf="usuario?.errors?.['required']">
           O usuario non pode estar baleiro
         </span>
+      </ng-container>
+      <ng-container *ngIf="errosServidor['usuario']">
+        <span *ngFor="let erro of errosServidor['usuario']">{{erro}}</span>
       </ng-container>
     </div>
 

@@ -24,9 +24,10 @@ class AutenticacionController extends Controller
 
         // Comprobar se hai erros de validación
         if ($validator->fails()) {
-            return response()->json([
-                'errores' => $validator->errors(),
-            ], 422);  // Código 422 para erros de validación
+            return response()->json(
+                $validator->errors(),
+                422
+            );  // Código 422 para erros de validación
         }
 
         /* Datos procesados */
@@ -68,22 +69,36 @@ class AutenticacionController extends Controller
 
     public function conectar(Request $request)
     {
-        $credentials = $request->validate([
-            'usuario' => ['required'],
-            'contrasinal' => ['required'],
+        // Validar os datos do formulario
+        $validator = Validator::make($request->all(), [
+            'usuario' => ['required', 'string'],
+            'contrasinal' => ['required', 'string'],
         ]);
+
+        // Se a validación falla, devolver os erros
+        if ($validator->fails()) {
+            return response()->json(
+                $validator->errors(),
+                422
+            ); // 422 Unprocessable Entity
+        }
+
+        // Obter as credenciais validadas
+        $credentials = $validator->validated();
 
         // Intentar autenticar o usuario
         if (Auth::attempt(['name' => $credentials['usuario'], 'password' => $credentials['contrasinal']])) {
             $request->session()->regenerate();
+
             return response()->json([
-                'usuario' => Auth::getName(),
+                'mensaxe' => 'Inicio de sesión exitoso',
+                'usuario' => Auth::user(),
             ], 200);
         }
 
         // Se as credenciais son incorrectas, devolver erro
         return response()->json([
-            'erro' => 'Houbo un erro no intento de inicio de sesión',
+            'usuario' => 'As credenciais proporcionadas non son correctas.'
         ], 401);
     }
 }

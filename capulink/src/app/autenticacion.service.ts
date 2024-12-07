@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
@@ -12,7 +13,7 @@ export class AutenticacionService {
    */
   api: string = "http://localhost:8000";
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {
     this.obterXSRFDoServidor();
   }
 
@@ -52,9 +53,7 @@ export class AutenticacionService {
       console.log('Formulario inválido');
       return
     }
-    return this.http.post(this.api + "/rexistro", formulario.value, this.opcionsComuns()).subscribe(response => {
-      console.log(response);
-    })
+    return this.http.post(this.api + "/rexistro", formulario.value, this.opcionsComuns())
   }
 
   /**
@@ -70,7 +69,7 @@ export class AutenticacionService {
       console.log("Formulario inválido");
       return
     }
-    return this.http.post(this.api + "/conexion", formulario.value, this.opcionsComuns()).subscribe(response => console.table(response))
+    return this.http.post(this.api + "/conexion", formulario.value, this.opcionsComuns())
   }
 
   /**

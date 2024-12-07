@@ -1,6 +1,6 @@
 <div class="host-centrado">
   <h2 id="subtitulo">Conectarse</h2>
-  <form [formGroup]="conexion" #form="ngForm" (submit)="autenticacion.iniciarSesion(conexion)">
+  <form [formGroup]="conexion" #form="ngForm" (submit)="iniciarSesion(conexion)">
     <label>Usuario</label>
     <input type="text" formControlName="usuario">
     <div class="form-erros-container">
