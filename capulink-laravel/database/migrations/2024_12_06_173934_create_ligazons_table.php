@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('ligazons', function (Blueprint $table) {
             $table->id(); // ID autoincremental
-            $table->unsignedBigInteger('categoria_id');
-            $table->string('titulo', 255); // Título cun límite de 255 caracteres
+            $table->unsignedBigInteger('categoria_id')->nullable();
+            $table->string('titulo', 255);
             $table->string('descricion')->nullable();
-            $table->boolean('apropiado')->default(true); // Indica se a ligazón é apropiada
+            $table->boolean('apropiado')->default(true);
             $table->enum('visibilidade', ['publico', 'oculto'])->default('oculto');
-            $table->string('url', 191)->unique(); // URL cun límite de 2048 caracteres
-            $table->timestamps(); // Created_at e updated_at
+            $table->text('url');
+            $table->timestamps();
 
             $table->foreign('categoria_id')->references('id')->on('categorias');
         });

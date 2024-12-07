@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('ligazon_id');
             $table->unsignedBigInteger('grupo_id');
+            $table->string('titulo');
+            $table->string('descricion')->nullable();
+            $table->boolean('apropiado')->default(true);
             $table->boolean('agochado')->default(true);
             $table->timestamps();
 
