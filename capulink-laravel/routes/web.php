@@ -25,3 +25,22 @@ Route::get('/user', function (Request $request) {
 Route::get('/test', function (Request $request) {
     return response()->json('test');
 });
+
+Route::middleware('auth:sanctum')->group( function () {
+    Route::get('/desconexion', [AutenticacionController::class, 'desconectar']);
+    Route::post('/desconexion', [AutenticacionController::class, 'desconectar']);
+    Route::middleware('comprobarRol')->group( function () {
+        Route::get('/admin');
+    });
+    Route::get('/usuario-estado', function (Request $request) {
+        $user = $request->user();
+
+        return response()->json([
+            'conectado' => $user ? true : false,
+            'eAdmin' => $user ? $user->admin : false,
+        ]);
+    });
+    Route::middleware('auth:sanctum')->get('/usuario-conectado', function (Request $request) {
+        return response()->json(['conectado' => true]);
+    });
+});

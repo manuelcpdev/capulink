@@ -13,7 +13,8 @@ import { AutenticacionService } from './autenticacion.service';
 export class AppComponent {
   title = 'capulink';
 
+  //O constructor de AutenticacionService realiza unha petición á API para obter a cookie XSRF-TOKEN
   constructor(private autenticacion: AutenticacionService) {
-
+    this.autenticacion.comprobarEstado();
   }
 }

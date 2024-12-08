@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-conexion',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgClass, NgFor],
+  imports: [ReactiveFormsModule, NgIf, NgFor],
   templateUrl: './conexion.component.html',
   styleUrl: './conexion.component.scss'
 })
@@ -36,17 +36,24 @@ export class ConexionComponent {
   iniciarSesion(formulario: FormGroup) {
     this.autenticacion.iniciarSesion(formulario)?.subscribe({
       next: (resposta) => {
+        this.autenticacion.usuarioConectadoSubject.next(true);
+        this.autenticacion.eAdminSubject.next(resposta.eAdmin); // o el valor correspondiente
+
+        localStorage.setItem('usuarioConectado', 'true');
+        localStorage.setItem('eAdmin', resposta.eAdmin.toString());
+
         this.router.navigate(['/']);
         console.table(resposta);
       },
       error: (resposta) => {
-        // console.table(resposta['error'])
-        // console.log(resposta['error'])
         for (let key in resposta['error']) {
           this.errosServidor[key] = resposta['error'][key]
         }
-        console.table(this.errosServidor)
-        console.log(this.errosServidor)
+        this.autenticacion.usuarioConectadoSubject.next(false);
+        this.autenticacion.eAdminSubject.next(false); // o el valor correspondiente
+
+        localStorage.setItem('usuarioConectado', 'false');
+        localStorage.setItem('eAdmin', 'false');
       },
       complete() {
         console.log('finalizou');

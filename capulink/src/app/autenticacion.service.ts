@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,37 @@ export class AutenticacionService {
    */
   api: string = "http://localhost:8000";
 
+  /**
+   * Comproba se o usuario está conectado
+   */
+  public usuarioConectadoSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  /**
+   * Comproba se o usuario é admin
+   */
+  public eAdminSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {
     this.obterXSRFDoServidor();
+    //this.comprobarEstado();
+    const usuarioConectado = localStorage.getItem('usuarioConectado') === 'true';
+    const eAdmin = localStorage.getItem('eAdmin') === 'true';
+    this.usuarioConectadoSubject.next(usuarioConectado);
+    this.eAdminSubject.next(eAdmin);
+  }
+
+  get usuarioConectado$(): Observable<boolean> {
+    return this.usuarioConectadoSubject.asObservable();
+  }
+
+  get eAdmin$(): Observable<boolean> {
+    return this.eAdminSubject.asObservable();
+  }
+
+  setAdmin() {
+    // Engadir a lóxica para establecer que o usuario é administrador
+    this.eAdminSubject.next(true);
+    localStorage.setItem('eAdmin', 'true');
   }
 
   /**
@@ -69,15 +99,39 @@ export class AutenticacionService {
       console.log("Formulario inválido");
       return;
     }
-    return this.http.post(this.api + "/conexion", formulario.value, this.opcionsComuns())
+    return this.http.post<{ conectado: boolean, eAdmin: boolean }>(this.api + "/conexion", formulario.value, this.opcionsComuns())
   }
 
   /**
    * Comproba se hai un usuario conectado
    * @returns
    */
-  comprobarConexion() {
-    return this.http.get(this.api + '/user', { withCredentials: true });
+  comprobarConexion(): Observable<boolean> {
+    return this.http.get<{ conectado: boolean }>(`${this.api}/usuario-conectado`, this.opcionsComuns()).pipe(
+      map(response => response.conectado),
+      catchError(() => of(false)) // Si hay un error, se asume que no está conectado
+    );
+  }
+
+  comprobarEstado(): void {
+    this.http.get<{ conectado: boolean; eAdmin: boolean }>(`${this.api}/usuario-estado`, this.opcionsComuns()).subscribe({
+      next: (response) => {
+        // Actualizar os estados
+        this.usuarioConectadoSubject.next(response.conectado);
+        this.eAdminSubject.next(response.eAdmin);
+
+        // Gardar en localStorage
+        localStorage.setItem('usuarioConectado', response.conectado.toString());
+        localStorage.setItem('eAdmin', response.eAdmin.toString());
+      },
+      error: () => {
+        // En caso de erro, asúmese que o usuario está desconectado
+        this.usuarioConectadoSubject.next(false);
+        this.eAdminSubject.next(false);
+        localStorage.setItem('usuarioConectado', 'false');
+        localStorage.setItem('eAdmin', 'false');
+      },
+    });
   }
 
   /**
@@ -108,5 +162,22 @@ export class AutenticacionService {
       withCredentials: true,
       headers: this.obterHeaderXSRF(),
     }
+  }
+
+  desconectar() {
+    return this.http.post(this.api + '/desconexion', null, this.opcionsComuns()).subscribe({
+      next: (resposta) => {
+        console.log('Usuario desconectado con éxito');
+        this.comprobarEstado();
+        this.router.navigate(['/']);
+      },
+      error: (resposta) => {
+        console.log('Non foi posible desconectarse');
+      }
+    });
+  }
+
+  actualizarEstado() {
+
   }
 }

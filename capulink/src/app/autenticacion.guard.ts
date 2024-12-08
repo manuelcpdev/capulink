@@ -6,28 +6,36 @@ import { HttpClient } from '@angular/common/http';
 
 export const autenticacionGuard: CanActivateFn = (route, state) => {
   const autenticacion = inject(AutenticacionService);
-  const http = inject(HttpClient);
   const router = inject(Router);
-  let rutasProhibidasConectado = [
+
+  // Definir rutas prohibidas para usuarios conectados
+  const rutasProhibidasConectado = [
     '/conexion',
     '/rexistro',
   ];
 
   return autenticacion.comprobarConexion().pipe(
-    map(() => {
-      // Se o usuario está conectado e tenta acceder ás rutas en rutasProhibidasConectado, bloqueamos o acceso
-      if (rutasProhibidasConectado.includes(state.url)) {
+    map((estaConectado) => {
+      if (estaConectado && rutasProhibidasConectado.includes(state.url)) {
+        // Si está conectado y accede a una ruta prohibida
         router.navigate(['/']);
-        return false; // Bloquear acceso
+        return false;
       }
-      return true; // Permitir acceso
+
+      if (!estaConectado && !rutasProhibidasConectado.includes(state.url)) {
+        // Si no está conectado y accede a una ruta protegida
+        router.navigate(['/conexion']);
+        return false;
+      }
+
+      // Si todo está bien, permitir acceso
+      return true;
     }),
     catchError(() => {
-      // Se hai un erro (usuario non conectado), devolvemos un observable con `true` ou `false`
-      if (rutasProhibidasConectado.includes(state.url)) {
-        return of(true); // Permitir acceso
-      }
-      return of(false); // Bloquear acceso a outras rutas
+      // En caso de error, redirigir a la página de conexión
+      router.navigate(['/conexion']);
+      return of(false);
     })
   );
 };
+
