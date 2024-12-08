@@ -20,20 +20,18 @@ export class MenuNavegacionComponent implements OnInit {
   logoImg: string = "assets/imaxes/logo/capulink3-33-46-3.png";
 
   constructor(private autenticacion: AutenticacionService) {
-    document?.getElementById('hamburguesa')?.addEventListener('click', function () {
-      const menuPrincipal = document.querySelectorAll('.menu-principal');
-      menuPrincipal.forEach(menu => {
-        menu.classList.toggle('active');
-      });
-    });
 
   }
 
   modificarVisibilidadeMenu() {
-    const menuPrincipal = document.querySelectorAll('.menu-principal');
-    menuPrincipal.forEach(menu => {
-      menu.classList.toggle('active');
-    });
+    let menusClases = [
+      '.nav-paxinas',
+      '.nav-botons',
+    ];
+    for (let menuClase of menusClases) {
+      let menu = document.querySelector(menuClase);
+      menu?.classList.toggle('activo');
+    }
   }
 
   ngOnInit() {
