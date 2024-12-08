@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticacionService } from '../autenticacion.service';
 import { NgFor, NgIf } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-rexistro',
@@ -31,13 +32,14 @@ export class RexistroComponent {
     return this.rexistro.get('contrasinal');
   }
 
-  constructor(public autenticacion: AutenticacionService) {
+  constructor(public autenticacion: AutenticacionService, private router: Router) {
 
   }
 
   rexistrarUsuario(formulario: FormGroup) {
     this.autenticacion.rexistrarUsuario(formulario)?.subscribe({
       next: (resposta) => {
+        this.router.navigate(['/']);
         console.log(resposta);
       },
       error: (resposta) => {
@@ -47,6 +49,10 @@ export class RexistroComponent {
         console.log(this.errosServidor);
       },
     })
+  }
+
+  limparErrosServidor(campo: string) {
+    delete this.errosServidor[campo];
   }
 
 }

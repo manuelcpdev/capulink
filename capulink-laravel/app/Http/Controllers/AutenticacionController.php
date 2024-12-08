@@ -75,7 +75,8 @@ class AutenticacionController extends Controller
             'contrasinal' => ['required', 'string'],
         ]);
 
-        // Se a validación falla, devolver os erros
+
+        // Se os campso non se enviaron, devolver erros
         if ($validator->fails()) {
             return response()->json(
                 $validator->errors(),
@@ -84,10 +85,19 @@ class AutenticacionController extends Controller
         }
 
         // Obter as credenciais validadas
-        $credentials = $validator->validated();
+        $credenciais = $validator->validated();
+
+        $user = User::where('name', $credenciais['usuario'])->first();
+
+        // Se o usuario non existe, devolver erro
+        if (!$user) {
+            return response()->json([
+                'usuario' => ["O usuario {$credenciais['usuario']} non existe."],
+            ], 422);
+        }
 
         // Intentar autenticar o usuario
-        if (Auth::attempt(['name' => $credentials['usuario'], 'password' => $credentials['contrasinal']])) {
+        if (Auth::attempt(['name' => $credenciais['usuario'], 'password' => $credenciais['contrasinal']])) {
             $request->session()->regenerate();
 
             return response()->json([
@@ -98,7 +108,7 @@ class AutenticacionController extends Controller
 
         // Se as credenciais son incorrectas, devolver erro
         return response()->json([
-            'usuario' => 'As credenciais proporcionadas non son correctas.'
-        ], 401);
+            'contrasinal' => ['O contrasinal non é correcto.'],
+        ], 422);
     }
 }

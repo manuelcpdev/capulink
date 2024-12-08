@@ -53,7 +53,7 @@ export class AutenticacionService {
       console.log('Formulario inválido');
       return
     }
-    return this.http.post(this.api + "/rexistro", formulario.value, this.opcionsComuns())
+    return this.http.post(this.api + "/rexistro", formulario.value, this.opcionsComuns());
   }
 
   /**
@@ -67,7 +67,7 @@ export class AutenticacionService {
     //Se o formulario ten erros, non realiza a petición HTTP
     if (formulario.invalid) {
       console.log("Formulario inválido");
-      return
+      return;
     }
     return this.http.post(this.api + "/conexion", formulario.value, this.opcionsComuns())
   }

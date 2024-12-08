@@ -4,16 +4,16 @@
   <form [formGroup]="rexistro" #form="ngForm" (ngSubmit)="rexistrarUsuario(rexistro)">
     <!--Input nome de usuario-->
     <label>Usuario</label>
-    <input type="text" formControlName="usuario">
+    <input type="text" formControlName="usuario" (input)="limparErrosServidor('usuario')">
 
     <div class="form-erros-container">
       <ng-container *ngIf="usuario?.invalid && (usuario?.dirty || usuario?.touched)">
-        <span *ngIf="usuario?.errors?.['required']">
+        <p *ngIf="usuario?.errors?.['required']">
           O usuario non pode estar baleiro
-        </span>
+        </p>
       </ng-container>
       <ng-container *ngIf="errosServidor['usuario']">
-        <span *ngFor="let erro of errosServidor['usuario']">{{erro}}</span>
+        <p *ngFor="let erro of errosServidor['usuario']">{{erro}}</p>
       </ng-container>
     </div>
 
@@ -21,16 +21,19 @@
 
     <!--Input email-->
     <label>Email</label>
-    <input type="email" formControlName="email">
+    <input type="email" formControlName="email" (input)="limparErrosServidor('email')">
 
     <div class="form-erros-container">
       <ng-container *ngIf="email?.invalid && (email?.dirty || email?.touched)">
-        <span *ngIf="email?.errors?.['required']">
+        <p *ngIf="email?.errors?.['required']">
           O email non pode estar baleiro
-        </span>
-        <span *ngIf="email?.errors?.['email']">
+        </p>
+        <p *ngIf="email?.errors?.['email']">
           O email non está ben formado
-        </span>
+        </p>
+      </ng-container>
+      <ng-container *ngIf="errosServidor['email']">
+        <p *ngFor="let erro of errosServidor['email']">{{erro}}</p>
       </ng-container>
     </div>
 
