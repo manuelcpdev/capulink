@@ -1,24 +1,20 @@
-import { Component, Injector, Input, NgModule } from '@angular/core';
-import { NgFor, NgIf, NgComponentOutlet, NgClass } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+
 @Component({
   selector: 'app-tabs',
-  standalone: true,
-  imports: [NgFor, NgIf, NgComponentOutlet, NgClass],
   templateUrl: './tabs.component.html',
-  styleUrl: './tabs.component.scss'
+  styleUrls: ['./tabs.component.scss'],
+  imports: [NgFor],
+  standalone: true,
 })
 export class TabsComponent {
-  cargarVista(opcion: string) {
-    this.opcion = opcion;
-  }
-  //opcions: String[] = ["Cookies", "Usuario", "Admin"];
-  @Input() opcions: string[] = ["Tab1", "Tab2", "Tab3"];
-  @Input() opcion: string = "Tab1";
-  @Input() componente: any;
+  @Input() opcions: string[] = [];  // Opcións dos tabs
+  @Input() opcionSeleccionada: string = '';  // Opción seleccionada
+  @Output() opcionChanged = new EventEmitter<string>();  // Evento para notificar a opción seleccionada
 
-  get injector(): Injector {
-    return Injector.create({
-      providers: [{ provide: 'opcion', useValue: this.opcion }],
-    });
+  cambiarOpcion(opcion: string) {
+    this.opcionSeleccionada = opcion;
+    this.opcionChanged.emit(opcion);  // Emitir a opción seleccionada
   }
 }

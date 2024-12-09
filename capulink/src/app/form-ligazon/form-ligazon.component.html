@@ -1,33 +1,28 @@
-<form id="form-ligazon" [formGroup]="formulario">
-  <label>Título</label>
-  <input type="text" formControlName="titulo">
-  <div *ngIf="formulario.get('titulo')?.invalid && formulario.get('titulo')?.touched">
-    {{ obterMensaxeError('titulo') }}
+<form [formGroup]="formulario" id="form-ligazon">
+  <div>
+    <label for="titulo">Título</label>
+    <input id="titulo" formControlName="titulo" />
   </div>
-
-  <label>URL</label>
-  <input type="text" formControlName="url">
-  <div *ngIf="formulario.get('url')?.invalid && formulario.get('url')?.touched">
-    {{ obterMensaxeError('url') }}
+  <div>
+    <label for="url">URL</label>
+    <input id="url" formControlName="url" />
   </div>
-
-  <label>Descripción</label>
-  <input type="text" formControlName="descripcion">
-
-  <div class="radio-contenedor">
-    <label>Agochar no perfil</label>
-    <span>Si</span><input type="radio" formControlName="agochado" value="true">
-    <span>Non</span><input type="radio" formControlName="agochado" value="false">
+  <div *ngIf="formulario.get('descripcion')">
+    <label for="descripcion">Descripción</label>
+    <input id="descripcion" formControlName="descripcion" />
   </div>
-
-  <div class="radio-contenedor">
-    <label>É apropiado</label>
-    <span>Si</span><input type="radio" formControlName="apropiado" value="true">
-    <span>Non</span><input type="radio" formControlName="apropiado" value="false">
+  <div *ngIf="formulario.get('etiquetas')">
+    <label for="etiquetas">Etiquetas</label>
+    <input id="etiquetas" formControlName="etiquetas" />
   </div>
-
-  <label>Etiquetas</label>
-  <input type="text" formControlName="etiquetas">
-
-  <input type="submit" [disabled]="formulario.invalid" value="Enviar">
+  <div *ngIf="formulario.get('agochado')">
+    <label for="agochado">Acochado</label>
+    <input type="checkbox" id="agochado" formControlName="agochado" />
+  </div>
+  <div *ngIf="formulario.get('apropiado')">
+    <label for="apropiado">Apropíado</label>
+    <input type="checkbox" id="apropiado" formControlName="apropiado" />
+  </div>
+  <button type="submit" class="boton-xeral-form" [class.boton-habilitado]="formulario.valid" [class.boton-deshabilitado]="formulario.invalid" [disabled]="formulario.invalid">Enviar</button>
+  <input type="submit" class="boton-xeral-form" [class.boton-habilitado]="formulario.valid" [class.boton-deshabilitado]="formulario.invalid" [disabled]="formulario.invalid" value="Gardar ligazón">
 </form>

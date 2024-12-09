@@ -10,7 +10,11 @@ import { FormLigazonComponent } from '../form-ligazon/form-ligazon.component';
   styleUrl: './inicio.component.scss',
 })
 export class InicioComponent {
-  opcions: string[] = ["Cookies", "Usuario", "Admin"];
-  componente = FormLigazonComponent;
-  opcion = "Usuario"
+  opcions: string[] = ['cookies', 'usuario', 'grupos', 'admin'];
+  opcionSeleccionada: string = 'cookies';
+  componente: any = FormLigazonComponent;
+
+  cambiarOpcion(opcion: string) {
+    this.opcionSeleccionada = opcion;
+  }
 }

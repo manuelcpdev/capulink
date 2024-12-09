@@ -1,9 +1,9 @@
-<p>tabs works!</p>
-<menu *ngIf="opcions != undefined">
-  <ul *ngFor="let opcionLoop of opcions as i;" (click)="cargarVista(opcionLoop)" [ngClass]="opcionLoop == opcion ? 'activo' : ''">
-    {{opcionLoop}}
+<div class="tabs">
+  <ul>
+    <li *ngFor="let opcion of opcions"
+        (click)="cambiarOpcion(opcion)"
+        [class.activo]="opcion === opcionSeleccionada">
+      {{ opcion }}
+    </li>
   </ul>
-</menu>
-<div *ngIf="componente">
-  <ng-container *ngComponentOutlet="componente; injector: injector"></ng-container>
 </div>

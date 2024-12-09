@@ -2,6 +2,7 @@
 :root {
   --cor-texto-principal: rgb(0, 0, 238);
   --grosor-letra-principal: 400;
+  height: 100%;
 }
 
 *, *::before, *::after {
@@ -12,6 +13,10 @@
 */
 * {
   margin: 0;
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
@@ -36,6 +41,13 @@ p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
+#titulos {
+  display: flex;
+  flex-direction: column;
+
+  text-align: center;
+}
+
 #titulo, #subtitulo {
   color: var(--cor-texto-principal);
 }
@@ -47,18 +59,23 @@ p, h1, h2, h3, h4, h5, h6 {
 .contenedor-centrado {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  gap: 20px;
   justify-content: center;
   align-items: center;
+
+  width: 50%;
 }
 
 .host-centrado {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  //justify-content: center;
   align-items: center;
+  margin-top: 50px;
+
   width: 100%;
   height: auto;
+
 }
 
 #contenedor-cartas {
@@ -118,13 +135,39 @@ form {
 
   input {
     width: 100%;
-
-    /* Se o submit non está deshabilitado (disabled), o cursor pasa a ser a man que sinala */
-    &[type=submit]:enabled:hover  {
-      cursor: pointer;
-    }
   }
 }
+
+button {
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+.boton-xeral-form {
+  margin-top: 10px;
+  border: 1px solid #077e26;
+  border-radius: 5px;
+  background-color: #7aee7a;
+  background-color: #89dfa2;
+  box-shadow: 0 0 #78b48c inset;
+}
+
+.boton-deshabilitado {
+  background-color: #89dfa296;
+  &:hover{
+    cursor: default;
+  }
+}
+
+.boton-habilitado {
+  color: #000297;
+  cursor: pointer;
+  &:hover {
+    background-color: #7dd97d;
+    cursor: pointer;
+  }
+}
+
 .form-erros-container {
   min-height: 25px;
 

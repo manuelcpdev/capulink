@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.paxina {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  * {
+    width: 100%;
+  }
+}

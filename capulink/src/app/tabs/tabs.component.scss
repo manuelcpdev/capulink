@@ -1,10 +1,25 @@
-menu {
+@import '../../styles.scss';
+
+.tabs {
   display: flex;
   flex-direction: row;
-  list-style: none;
+
   margin: 0;
   padding: 0;
+
+  color: var(--cor-texto-principal);
+  font-weight: 100;
+
+  list-style: none;
+
   ul {
+    display: flex;
+    gap: 3px;
+    padding: 0;
+
+    list-style: none;
+  }
+  li {
     padding: 5px 20px;
 
     border: 1px solid #333;
@@ -13,11 +28,11 @@ menu {
     cursor: pointer;
 
     &:hover {
-      background-color: cyan;
+      background-color: #aaffc7;
     }
 
-    .activo {
-      background-color: yellow;
+    &.activo {
+      background-color: #00fff36e;
     }
   }
 }

@@ -9,10 +9,12 @@ import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class AutenticacionService {
+  apiHost: string = 'http://localhost';
+  apiPort: string = ':8000'
   /**
    * URL da API do servidor en Laravel Sanctum
    */
-  api: string = "http://localhost:8000";
+  api: string = `${this.apiHost}${this.apiPort}`;
 
   /**
    * Comproba se o usuario está conectado

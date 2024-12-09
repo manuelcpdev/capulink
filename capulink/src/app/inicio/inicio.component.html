@@ -1,33 +1,16 @@
 <div class="contenedor-centrado">
-  <h1 id="titulo">Capulink</h1>
-  <h3 id="subtitulo">Garda as túas ligazóns</h3>
-  <app-tabs [opcions]="opcions" [componente]="componente" [opcion]="opcion"></app-tabs>
-  <form action="" id="form-ligazon">
-    <label for="">Título</label>
-    <input type="text" name="" id="">
-    <label for="">Ligazón</label>
-    <input type="text" name="" id="">
-    <p for="">Gardar en</p>
-    <div class="radio-contenedor">
-      <div>
-        <label>
-          <input type="radio" name="radio" checked="">
-          <span>Usuario</span>
-        </label>
-        <label>
-          <input type="radio" name="radio">
-          <span>Cookies</span>
-        </label>
-      </div>
-    </div>
-    <label>Categoría</label>
-    <select>
-      <option>Software</option>
-      <option>Música</option>
-      <option>Películas</option>
-    </select>
-    <label>Etiquetas</label>
-    <input type="text">
-    <input type="submit" value="Gardar ligazón">
-  </form>
+  <div id="titulos">
+    <h1 id="titulo">Capulink</h1>
+    <h3 id="subtitulo">Garda as túas ligazóns</h3>
+  </div>
+
+  <div>
+    <app-tabs [opcions]="opcions" [opcionSeleccionada]="opcionSeleccionada" (opcionChanged)="cambiarOpcion($event)">
+    </app-tabs>
+
+    <app-form-ligazon [opcion]="opcionSeleccionada"></app-form-ligazon>
+
+  </div>
+
+
 </div>
