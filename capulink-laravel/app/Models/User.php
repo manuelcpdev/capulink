@@ -68,7 +68,7 @@ class User extends Authenticatable
     public function ligazons()
     {
         return $this->belongsToMany(Ligazon::class, 'usuario_ligazon', 'user_id', 'ligazon_id')
-            ->withPivot('agochado', 'apropiado', 'descricion')
+            ->withPivot('titulo','agochado', 'apropiado', 'descricion')
             ->withTimestamps();
     }
 }
