@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ligazon;
+use App\Models\User;
 use App\Models\RegexLigazonProhibida;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +16,7 @@ class LigazonController extends Controller
      */
     public function index()
     {
-        //
+        $ligazon = Ligazon::all();
     }
 
     /**
@@ -73,5 +75,40 @@ class LigazonController extends Controller
     public function destroy(Ligazon $ligazon)
     {
         //
+    }
+
+
+    public function crearLigazonDeUsuario($request) {
+
+        try {
+            DB::beginTransaction(); // Inicia la transacción
+            $ligazon = new Ligazon();
+            $ligazon->categoria_id = $request->input('idCategoria');
+            $ligazon->titulo = $request->input('tituloLigazon');
+            $ligazon->descricion = $request->input('descricion');
+            $ligazon->apropiado = $request->input('apropiado');
+            $ligazon->visibilidade = $request->input('visibilidade');
+            $ligazon->url = $request->input('url');
+            $ligazon->save();
+
+            $user = Auth::getUser();
+            $user = User::where('id', $user->id)->first();
+            $user->ligazons()->attach($ligazon->id, [
+                'agochado' => $ligazon->visibilidade,
+                'apropiado' => $ligazon->apropiado,
+                'descricion' => $ligazon->descricion
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Error ao crear a ligazón',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        return response()->json([
+            'message' => 'Ligazón creada',
+            'categoria' => $ligazon
+        ]);
     }
 }

@@ -14,6 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         //
         $middleware->statefulApi();
+        $middleware->validateCsrfTokens([
+            '/rexistro',
+            '/desconexion',
+            '/conexion',
+            '/categorias',
+            '/usuarios/ligazons'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

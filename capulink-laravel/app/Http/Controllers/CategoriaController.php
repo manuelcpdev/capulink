@@ -28,7 +28,13 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $categoria = new Categoria();
+        $categoria->titulo = $request->input('tituloCategoria'); // Asignación manual
+        $categoria->save();
+        return response()->json([
+            'message' => 'Categoría creada',
+            'categoria' => $categoria
+        ]);
     }
 
     /**

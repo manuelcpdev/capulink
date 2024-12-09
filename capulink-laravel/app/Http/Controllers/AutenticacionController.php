@@ -111,4 +111,13 @@ class AutenticacionController extends Controller
             'contrasinal' => ['O contrasinal non é correcto.'],
         ], 422);
     }
+
+    public function desconectar(Request $request){
+        if (Auth::check()) {
+            Auth::logout();
+            return response()->json(['mensaxe' => ['Usuario desconectado']], 200);
+        } else {
+            return response()->json(['mensaxe' => ['Non había ningún usuario conectado']], 200);
+        }
+    }
 }
