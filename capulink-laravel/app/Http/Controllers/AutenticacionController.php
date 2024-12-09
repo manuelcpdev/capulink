@@ -13,6 +13,12 @@ class AutenticacionController extends Controller
 {
     public function rexistrar(Request $request)
     {
+        if (Auth::user()) {
+            return response()->json(
+                ['conexion' => "Xa hai un usuario conectado: " . Auth::user()->name],
+                403
+            );
+        }
 
         $regras = [
             'usuario' => 'required|unique:users,name',
@@ -22,6 +28,7 @@ class AutenticacionController extends Controller
 
         $validator = Validator::make($request->all(), $regras);
 
+
         // Comprobar se hai erros de validación
         if ($validator->fails()) {
             return response()->json(
@@ -29,6 +36,8 @@ class AutenticacionController extends Controller
                 422
             );  // Código 422 para erros de validación
         }
+
+        $credenciais = $validator->validated();
 
         /* Datos procesados */
         $formData = [
@@ -102,7 +111,8 @@ class AutenticacionController extends Controller
 
             return response()->json([
                 'mensaxe' => 'Inicio de sesión exitoso',
-                'usuario' => Auth::user(),
+                'conectado' => Auth::user()->name,
+                'eAdmin' => Auth::user()->admin,
             ], 200);
         }
 
@@ -112,12 +122,23 @@ class AutenticacionController extends Controller
         ], 422);
     }
 
-    public function desconectar(Request $request){
-        if (Auth::check()) {
-            Auth::logout();
-            return response()->json(['mensaxe' => ['Usuario desconectado']], 200);
-        } else {
-            return response()->json(['mensaxe' => ['Non había ningún usuario conectado']], 200);
+    function desconectar(Request $request)
+    {
+        try {
+            auth('web')->logout();
+            return response()->json(
+                [
+                    'mensaxe' => 'Desconectado con éxito',
+                    'conectado' => 'false',
+                    'eAdmin' => 'false',
+                ],
+                200
+            );
+        } catch (\Throwable $th) {
+            return response()->json(
+                'Houbo un error...',
+                403
+            );
         }
     }
 }

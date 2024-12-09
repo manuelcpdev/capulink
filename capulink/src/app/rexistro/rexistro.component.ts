@@ -41,12 +41,15 @@ export class RexistroComponent {
       next: (resposta) => {
         this.router.navigate(['/']);
         console.log(resposta);
+        localStorage.setItem('usuarioConectado', 'true');
       },
       error: (resposta) => {
         for (let key in resposta['error']) {
           this.errosServidor[key] = resposta['error'][key]; // Array de erros por campo
         }
-        console.log(this.errosServidor);
+        if(resposta['error'].includes('conexion')) {
+          localStorage.setItem('usuarioConectado', 'true');
+        }
       },
     })
   }
