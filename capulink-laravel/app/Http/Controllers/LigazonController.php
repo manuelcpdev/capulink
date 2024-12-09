@@ -78,7 +78,7 @@ class LigazonController extends Controller
     }
 
 
-    public function crearLigazonDeUsuario($request) {
+    public function crearLigazonDeUsuario(Request $request) {
 
         try {
             DB::beginTransaction(); // Inicia la transacción
@@ -91,13 +91,15 @@ class LigazonController extends Controller
             $ligazon->url = $request->input('url');
             $ligazon->save();
 
-            $user = Auth::getUser();
-            $user = User::where('id', $user->id)->first();
+            $user = User::where('id', Auth::user()->getAuthIdentifier())->first();
             $user->ligazons()->attach($ligazon->id, [
+                'titulo' => $ligazon->titulo,
                 'agochado' => $ligazon->visibilidade,
                 'apropiado' => $ligazon->apropiado,
                 'descricion' => $ligazon->descricion
             ]);
+
+            DB::commit();
 
         } catch (\Exception $e) {
             DB::rollBack();
