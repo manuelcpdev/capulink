@@ -26,7 +26,7 @@
   <menu class="nav-botons">
     <span *ngIf="!usuarioConectado" id="conexion" routerLink="/conexion"><button>Conectarse</button></span>
     <span *ngIf="!usuarioConectado" id="rexistro"><button routerLink="/rexistro">Rexistrarse</button></span>
-    <span *ngIf="usuarioConectado" id="perfil"><button routerLink="/perfil">Perfil</button></span>
+    <span *ngIf="usuarioConectado" id="perfil"><button routerLink="/perfil"><i class="fa-solid fa-user"></i>Perfil</button></span>
     <span *ngIf="eAdmin" id="admin" routerLink="/administracion"><button>Administración</button></span>
     <span *ngIf="usuarioConectado"><button (click)="desconectar()">Desconectarse</button></span>
   </menu>

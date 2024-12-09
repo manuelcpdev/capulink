@@ -124,21 +124,17 @@ class AutenticacionController extends Controller
 
     function desconectar(Request $request)
     {
-        try {
+        if (auth('web')->check()) {
             auth('web')->logout();
-            return response()->json(
-                [
-                    'mensaxe' => 'Desconectado con éxito',
-                    'conectado' => 'false',
-                    'eAdmin' => 'false',
-                ],
-                200
-            );
-        } catch (\Throwable $th) {
-            return response()->json(
-                'Houbo un error...',
-                403
-            );
+            return response()->json([
+                'mensaxe' => 'Desconectado con éxito',
+                'conectado' => false,
+                'eAdmin' => false,
+            ], 200);
+        } else {
+            return response()->json([
+                'mensaxe' => 'O usuario xa está desconectado',
+            ], 400);
         }
     }
 }

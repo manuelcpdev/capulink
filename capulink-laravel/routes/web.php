@@ -18,7 +18,7 @@ Route::get('/sanctum/csrf-cookie', function () {
 });
 
 Route::post('rexistro', [AutenticacionController::class, 'rexistrar']);
-Route::post('conexion', [AutenticacionController::class, 'conectar']);
+Route::post('conexion', [AutenticacionController::class, 'conectar'])->middleware('web');
 Route::post('desconexion', [AutenticacionController::class, 'desconectar']);
 
 Route::get('/user', function (Request $request) {

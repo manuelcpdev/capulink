@@ -104,6 +104,20 @@ export class AutenticacionService {
     return this.http.post<{ conectado: boolean, eAdmin: boolean }>(this.api + "/conexion", formulario.value, this.opcionsComuns())
   }
 
+  desconectar() {
+    return this.http.post(this.api + '/desconexion', null, this.opcionsComuns()).subscribe({
+      next: (resposta) => {
+        console.log('Usuario desconectado con éxito');
+        this.comprobarEstado();
+        this.router.navigate(['/']);
+        console.log('Desconexión exitosa.');
+      },
+      error: (resposta) => {
+        console.log('Non foi posible desconectarse');
+      }
+    });
+  }
+
   /**
    * Comproba se hai un usuario conectado
    * @returns
@@ -166,18 +180,7 @@ export class AutenticacionService {
     }
   }
 
-  desconectar() {
-    return this.http.post(this.api + '/desconexion', null, this.opcionsComuns()).subscribe({
-      next: (resposta) => {
-        console.log('Usuario desconectado con éxito');
-        this.comprobarEstado();
-        this.router.navigate(['/']);
-      },
-      error: (resposta) => {
-        console.log('Non foi posible desconectarse');
-      }
-    });
-  }
+
 
   actualizarEstado() {
 
