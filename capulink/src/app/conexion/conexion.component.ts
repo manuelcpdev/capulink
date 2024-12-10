@@ -29,15 +29,15 @@ export class ConexionComponent {
     return this.conexion.get('contrasinal');
   }
 
-  constructor(public autenticacion: AutenticacionService, private router: Router) {
+  constructor(public autenticacionService: AutenticacionService, private router: Router) {
     //autenticacion.comprobarConexion();
   }
 
   iniciarSesion(formulario: FormGroup) {
-    this.autenticacion.iniciarSesion(formulario)?.subscribe({
+    this.autenticacionService.iniciarSesion(formulario)?.subscribe({
       next: (resposta) => {
-        this.autenticacion.usuarioConectadoSubject.next(true);
-        this.autenticacion.eAdminSubject.next(resposta.eAdmin); // o el valor correspondiente
+        this.autenticacionService.usuarioConectadoSubject.next(true);
+        this.autenticacionService.eAdminSubject.next(resposta.eAdmin); // o el valor correspondiente
 
         localStorage.setItem('usuarioConectado', 'true');
         localStorage.setItem('eAdmin', resposta.eAdmin.toString());
@@ -49,8 +49,8 @@ export class ConexionComponent {
         for (let key in resposta['error']) {
           this.errosServidor[key] = resposta['error'][key]
         }
-        this.autenticacion.usuarioConectadoSubject.next(false);
-        this.autenticacion.eAdminSubject.next(false); // o el valor correspondiente
+        this.autenticacionService.usuarioConectadoSubject.next(false);
+        this.autenticacionService.eAdminSubject.next(false); // o el valor correspondiente
 
         localStorage.setItem('usuarioConectado', 'false');
         localStorage.setItem('eAdmin', 'false');

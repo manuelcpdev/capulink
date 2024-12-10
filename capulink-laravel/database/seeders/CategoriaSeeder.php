@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Categoria;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,10 +14,14 @@ class CategoriaSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        DB::table('categorias')->insert([
-            'id' => 1,
-            'titulo' => 'Mixto',
-        ]);
+        $categorias = ['mixto', 'programación', 'videoxogos', 'utilidades'];
+        foreach ($categorias as $categoria) {
+            if (Categoria::where('titulo', $categoria)->exists()) {
+                continue;
+            }
+            DB::table('categorias')->insert([
+                'titulo' => $categoria,
+            ]);
+        }
     }
 }

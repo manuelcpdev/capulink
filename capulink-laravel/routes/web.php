@@ -18,7 +18,7 @@ Route::get('/sanctum/csrf-cookie', function () {
 });
 
 Route::post('rexistro', [AutenticacionController::class, 'rexistrar']);
-Route::post('conexion', [AutenticacionController::class, 'conectar'])->middleware('web');
+Route::post('conexion', [AutenticacionController::class, 'conectar']);
 Route::post('desconexion', [AutenticacionController::class, 'desconectar']);
 
 Route::get('/user', function (Request $request) {
@@ -54,6 +54,9 @@ Route::get('/usuarios/:id/ligazons');
 Route::get('/usuarios/:id/perfil');
 Route::get('/grupos/:id');
 Route::get('/grupos');
+
+Route::get('/perfil/{name}', [PerfilController::class, 'show']);
+Route::get('/perfil', [PerfilController::class, 'amosarConectado']);
 
 Route::get('/csrf', function(Request $request){
     return view('csrf');

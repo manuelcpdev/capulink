@@ -12,14 +12,14 @@ import { NgIf } from '@angular/common';
 })
 export class MenuNavegacionComponent implements OnInit {
   desconectar() {
-    this.autenticacion.desconectar();
+    this.autenticacionService.desconectar();
   }
   usuarioConectado: boolean = false;
   eAdmin: boolean = false;
 
   logoImg: string = "assets/imaxes/logo/capulink3-33-46-3.png";
 
-  constructor(private autenticacion: AutenticacionService) {
+  constructor(private autenticacionService: AutenticacionService) {
 
   }
 
@@ -35,11 +35,11 @@ export class MenuNavegacionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.autenticacion.usuarioConectado$.subscribe((estado) => {
+    this.autenticacionService.usuarioConectado$.subscribe((estado) => {
       this.usuarioConectado = estado;
     });
 
-    this.autenticacion.eAdmin$.subscribe((estado) => {
+    this.autenticacionService.eAdmin$.subscribe((estado) => {
       this.eAdmin = estado;
     });
   }

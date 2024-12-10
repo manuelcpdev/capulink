@@ -1,15 +1,28 @@
-import { Component, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service'; // Importa o teu servizo
+import { NgFor, NgIf } from '@angular/common';
+
 @Component({
   selector: 'app-ligazons',
-  standalone: true,
-  imports: [],
   templateUrl: './ligazons.component.html',
-  styleUrl: './ligazons.component.scss'
+  styleUrls: ['./ligazons.component.scss'],
+  standalone: true,
+  imports: [NgFor, NgIf],
 })
-export class LigazonsComponent {
-  constructor() {
+export class LigazonsComponent implements OnInit {
+  ligazonsCookies: any[] = [];
+  ligazonsUsuario: any[] = [];
 
+  constructor(private xestorCookies: XestorCookiesUsuarioService) {}
+
+  ngOnInit(): void {
+    // Obter as ligazóns gardadas nas cookies
+    this.ligazonsCookies = this.xestorCookies.ligazonsCookies;
+
+    // Simulación de ligazóns asociadas ao usuario (actualiza segundo a túa lóxica)
+    const usuario = this.xestorCookies.usuario;
+    if (usuario && usuario.ligazons) {
+      this.ligazonsUsuario = usuario.ligazons;
+    }
   }
 }

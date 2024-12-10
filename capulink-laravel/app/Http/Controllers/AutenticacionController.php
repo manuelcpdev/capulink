@@ -51,7 +51,8 @@ class AutenticacionController extends Controller
 
         /* Crea un perfil de usuario asociado ó novo usuario */
         $perfil = $user->perfil()->create([
-            'foto' => '',  // Foto por defecto
+            'user_id' => $user->id,
+            'foto' => 'https://img.pokemondb.net/sprites/brilliant-diamond-shining-pearl/normal/cubone.png',  // Foto por defecto
             'visibilidade' => 'publico',  // Visibilidade por defecto
         ]);
 

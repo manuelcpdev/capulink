@@ -85,7 +85,7 @@ export class AutenticacionService {
       console.log('Formulario inválido');
       return
     }
-    return this.http.post(this.api + "/rexistro", formulario.value, this.opcionsComuns());
+    return this.http.post<{ conectado: boolean, eAdmin: boolean }>(this.api + "/rexistro", formulario.value, this.opcionsComuns());
   }
 
   /**

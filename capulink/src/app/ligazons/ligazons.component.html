@@ -1,125 +1,34 @@
 <div class="contenedor-centrado">
-<div>
-  <h1 id="titulo">Ligazóns</h1>
-</div>
-
-<div id="contenedor-cartas">
-  <div class="carta">
-    <div class="titulo-carta">
-      <h2>Ligazóns gardadas</h2>
-    </div>
-    <div class="contenedor-ligazons">
-      <div>
-        <h3 class="titulo-ligazon">Google</h3>
-        <p><a href="https://google.com">https://google.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Stack Overflow</h3>
-        <p><a href="https://google.com">https://stackoverflow.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">X</h3>
-        <p><a href="https://google.com">https://x.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Axadrez Online</h3>
-        <p><a href="https://google.com">https://chess.com</a></p>
-      </div>
-    </div>
+  <div>
+    <h1 id="titulo">Ligazóns</h1>
   </div>
 
-  <div class="carta">
-    <div class="titulo-carta">
-      <h2>Ligazóns gardadas</h2>
-    </div>
-    <div class="contenedor-ligazons">
-      <div>
-        <h3 class="titulo-ligazon">Google</h3>
-        <p><a href="https://google.com">https://google.com</a></p>
+  <div id="contenedor-cartas">
+    <!-- Tarxeta para ligazóns gardadas en cookies -->
+    <div class="carta" *ngIf="ligazonsCookies.length > 0">
+      <div class="titulo-carta">
+        <h2>Ligazóns gardadas</h2>
       </div>
-      <div>
-        <h3 class="titulo-ligazon">Stack Overflow</h3>
-        <p><a href="https://google.com">https://stackoverflow.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">X</h3>
-        <p><a href="https://google.com">https://x.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Axadrez Online</h3>
-        <p><a href="https://google.com">https://chess.com</a></p>
+      <div class="contenedor-ligazons">
+        <div *ngFor="let ligazon of ligazonsCookies">
+          <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
+          <button><i class="fa-solid fa-delete-left"></i></button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="carta">
-    <div class="titulo-carta">
-      <h2>Ligazóns gardadas</h2>
-    </div>
-    <div class="contenedor-ligazons">
-      <div>
-        <h3 class="titulo-ligazon">Google</h3>
-        <p><a href="https://google.com">https://google.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Stack Overflow</h3>
-        <p><a href="https://google.com">https://stackoverflow.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">X</h3>
-        <p><a href="https://google.com">https://x.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Axadrez Online</h3>
-        <p><a href="https://google.com">https://chess.com</a></p>
-      </div>
-    </div>
-  </div>
-  <div class="carta">
-    <div class="titulo-carta">
-      <h2>Ligazóns gardadas</h2>
-    </div>
-    <div class="contenedor-ligazons">
-      <div>
-        <h3 class="titulo-ligazon">Google</h3>
-        <p><a href="https://google.com">https://google.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Stack Overflow</h3>
-        <p><a href="https://google.com">https://stackoverflow.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">X</h3>
-        <p><a href="https://google.com">https://x.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Axadrez Online</h3>
-        <p><a href="https://google.com">https://chess.com</a></p>
-      </div>
-    </div>
-  </div>
-  <div class="carta">
-    <div class="titulo-carta">
-      <h2>Ligazóns gardadas</h2>
-    </div>
-    <div class="contenedor-ligazons">
-      <div>
-        <h3 class="titulo-ligazon">Google</h3>
-        <p><a href="https://google.com">https://google.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Stack Overflow</h3>
-        <p><a href="https://google.com">https://stackoverflow.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">X</h3>
-        <p><a href="https://google.com">https://x.com</a></p>
-      </div>
-      <div>
-        <h3 class="titulo-ligazon">Axadrez Online</h3>
-        <p><a href="https://google.com">https://chess.com</a></p>
-      </div>
-    </div>
-  </div>
-</div>
 
+    <!-- Tarxeta para ligazóns asociadas ao usuario -->
+    <div class="carta" *ngIf="ligazonsUsuario.length > 0">
+      <div class="titulo-carta">
+        <h2>Ligazóns do usuario</h2>
+      </div>
+      <div class="contenedor-ligazons">
+        <div *ngFor="let ligazon of ligazonsUsuario">
+          <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,12 @@
+<div class="host-centrado">
+  <h1 id="titulo">Perfil de usuario</h1>
+</div>
+<div>
+  <div *ngIf="error">
+    Non tes permiso para ver este perfil de usuario
+  </div>
+  <div *ngIf="name">
+    Usuario {{name}}
+    <img [src]="foto">
+  </div>
+</div>

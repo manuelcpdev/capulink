@@ -32,16 +32,22 @@ export class RexistroComponent {
     return this.rexistro.get('contrasinal');
   }
 
-  constructor(public autenticacion: AutenticacionService, private router: Router) {
+  constructor(public autenticacionService: AutenticacionService, private router: Router) {
 
   }
 
   rexistrarUsuario(formulario: FormGroup) {
-    this.autenticacion.rexistrarUsuario(formulario)?.subscribe({
+    this.autenticacionService.rexistrarUsuario(formulario)?.subscribe({
       next: (resposta) => {
         this.router.navigate(['/']);
         console.log(resposta);
         localStorage.setItem('usuarioConectado', 'true');
+
+        this.autenticacionService.usuarioConectadoSubject.next(true);
+        this.autenticacionService.eAdminSubject.next(resposta.eAdmin); // o el valor correspondiente
+
+        localStorage.setItem('usuarioConectado', 'true');
+        localStorage.setItem('eAdmin', resposta.eAdmin.toString());
       },
       error: (resposta) => {
         for (let key in resposta['error']) {

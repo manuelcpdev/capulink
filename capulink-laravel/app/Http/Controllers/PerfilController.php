@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Perfil;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class PerfilController extends Controller
 {
@@ -32,11 +35,49 @@ class PerfilController extends Controller
     }
 
     /**
+     * Amosar perfil do usuario conectado
+     */
+
+     public function amosarConectado() {
+        $user = User::where('name', Auth::user()->name)->first();
+
+        if($user) {
+            return response()->json([
+                'name' => $user->name,
+                'foto' => $user->perfil->foto,
+                'visibilidade' => $user->perfil->visibilidade,
+            ], 200);
+        }
+
+        return response()->json([
+            'mensaxe' => 'O usuario non está conectado',
+            'error' => '',
+        ], 400);
+     }
+
+    /**
      * Display the specified resource.
      */
-    public function show(Perfil $perfil)
+    public function show($name)
     {
-        //
+        $usuario = User::where('name', $name)->first();
+
+        if (!$usuario) {
+            return response()->json(['error' => 'Usuario non atopado'], 404);
+        }
+
+        if (Auth::user()->admin || $usuario->perfil->visibilidade == 'publico' || Auth::user()->name == $usuario->name) {
+            return response()->json([
+                'mensaxe' => 'Acceso permitido',
+                'name' => $usuario->name,
+                'foto' => $usuario->perfil->foto,
+            ], 200);
+        } else {
+            return response()->json([
+                'mensaxe' => 'Este perfil non é publico',
+                'error' => '',
+            ], 403);
+        }
     }
 
     /**
