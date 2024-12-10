@@ -19,7 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
             '/desconexion',
             '/conexion',
             '/categorias',
-            '/usuarios/ligazons'
+            '/usuarios/ligazons',
+            '/grupo/crear',
+            'grupo/modificar',
+            '/grupo/eliminar',
+            '/grupo/unirse',
+            '/grupo/sair'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

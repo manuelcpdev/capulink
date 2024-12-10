@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\LigazonController;
 use App\Http\Controllers\PerfilController;
 
@@ -65,3 +66,9 @@ Route::get('/csrf', function(Request $request){
 Route::post('/usuarios/ligazons', [LigazonController::class, 'crearLigazonDeUsuario']);
 
 Route::post('/categorias', [CategoriaController::class, 'store']);
+
+Route::post('/grupo/crear', [GrupoController::class, 'store']);
+Route::post('/grupo/modificar', [GrupoController::class, 'updateGrupo']);
+Route::post('/grupo/eliminar', [GrupoController::class, 'deleteGrupo']);
+Route::post('/grupo/unirse', [GrupoController::class, 'joinGrupo']);
+Route::post('/grupo/sair', [GrupoController::class, 'forfeitGrupo']);
