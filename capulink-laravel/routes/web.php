@@ -54,7 +54,7 @@ Route::resource('administracion/ligazon/', PerfilController::class);
 Route::get('/usuarios/:id/ligazons');
 Route::get('/usuarios/:id/perfil');
 Route::get('/grupos/:id');
-Route::get('/grupos');
+Route::get('/grupos'); //
 
 Route::get('/perfil/{name}', [PerfilController::class, 'show']);
 Route::get('/perfil', [PerfilController::class, 'amosarConectado']);
@@ -68,7 +68,9 @@ Route::post('/usuarios/ligazons', [LigazonController::class, 'crearLigazonDeUsua
 Route::post('/categorias', [CategoriaController::class, 'store']);
 
 Route::post('/grupo/crear', [GrupoController::class, 'store']);
-Route::post('/grupo/modificar', [GrupoController::class, 'updateGrupo']);
-Route::post('/grupo/eliminar', [GrupoController::class, 'deleteGrupo']);
+Route::post('/grupo/modificar', [GrupoController::class, 'updateGrupo']); // admin deberia poder
+Route::post('/grupo/eliminar', [GrupoController::class, 'deleteGrupo']); // admin deberia poder
 Route::post('/grupo/unirse', [GrupoController::class, 'joinGrupo']);
 Route::post('/grupo/sair', [GrupoController::class, 'forfeitGrupo']);
+
+Route::get('/grupo', [GrupoController::class, 'forfeitGrupo']);
