@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\LigazonController;
 use App\Http\Controllers\PerfilController;
+use App\Models\Grupo;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,7 +55,7 @@ Route::resource('administracion/ligazon/', PerfilController::class);
 Route::get('/usuarios/:id/ligazons', [LigazonController::class, 'obterLigazonsUsuario']);
 Route::get('/usuarios/:id/perfil');
 Route::get('/grupos/:id');
-Route::get('/grupos');
+Route::get('/grupos'); //
 
 Route::get('/perfil/{name}', [PerfilController::class, 'show']);
 Route::get('/perfil', [PerfilController::class, 'amosarConectado']);
@@ -67,3 +69,20 @@ Route::get('/usuarios/ligazons', [LigazonController::class, 'obterLigazonsUsuari
 Route::get('/usuarios/ligazons/{name}', [LigazonController::class, 'obterLigazonsUsuario']);
 
 Route::post('/categorias', [CategoriaController::class, 'store']);
+
+Route::post('/grupo/crear', [GrupoController::class, 'store']);
+Route::post('/grupo/modificar', [GrupoController::class, 'updateGrupo']); // admin deberia poder
+Route::post('/grupo/eliminar', [GrupoController::class, 'deleteGrupo']); // admin deberia poder
+Route::post('/grupo/unirse', [GrupoController::class, 'joinGrupo']);
+Route::post('/grupo/sair', [GrupoController::class, 'forfeitGrupo']);
+
+//Por probar
+Route::get('/grupos/usuario/miembro', [GrupoController::class, 'getGruposWithMembership']);
+Route::get('/grupos/usuario/creador', [GrupoController::class, 'getGruposOfCreator']);
+Route::get('/grupos/usuario', [GrupoController::class, 'getGruposUsuario']); //todos los grupos del usuario
+Route::get('/grupos/publicos', [GrupoController::class, 'getGruposPublicos']);
+Route::get('/grupo/{id}', [GrupoController::class, 'getGrupo']);
+
+// Ligazons de grupo
+// Etiquetas de grupo
+// Etiquetas de las ligazons del grupo
