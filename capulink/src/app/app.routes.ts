@@ -15,5 +15,7 @@ export const routes: Routes = [
   {path: 'administracion', component: AdministracionComponent},
   {path: 'perfil', component: PerfilComponent},
   {path: 'perfil/:name', component: PerfilComponent},
+  {path: 'ligazons/', component: LigazonsComponent},
+  {path: 'ligazons/:name', component: LigazonsComponent},
   {path: '*', component: InicioComponent},
 ];

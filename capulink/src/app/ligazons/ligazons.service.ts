@@ -26,8 +26,8 @@ export class LigazonsService {
    */
   obterLigazons(name: string | null): Observable<any> {
     const endpoint = name
-      ? `${this.autenticacionService.api}/ligazons/${name}`
-      : `${this.autenticacionService.api}/ligazons`;
+      ? `${this.autenticacionService.api}/usuarios/ligazons/${name}`
+      : `${this.autenticacionService.api}/usuarios/ligazons`;
 
     return this.http.get<any>(endpoint, this.autenticacionService.opcionsComuns());
   }
