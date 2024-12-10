@@ -12,8 +12,8 @@
       <div class="contenedor-ligazons">
         <div *ngFor="let ligazon of ligazonsCookies">
           <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
-          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
           <button><i class="fa-solid fa-delete-left"></i></button>
+          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
         </div>
       </div>
     </div>
@@ -27,6 +27,7 @@
         <div *ngFor="let ligazon of ligazonsUsuario">
           <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
           <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
+          <p>{{ ligazon.descricion }}</p>
         </div>
       </div>
     </div>

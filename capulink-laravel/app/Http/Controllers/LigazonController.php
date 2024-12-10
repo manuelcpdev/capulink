@@ -244,10 +244,14 @@ class LigazonController extends Controller
         $ligazons = $user->ligazons;
         $ligazonsPivot = [];
         foreach($ligazons as $ligazon) {
+            foreach($ligazon->etiquetasUsuario as $etiqueta) {
+
+            }
             $ligazonsPivot[] = array_merge(
                 $ligazon->pivot->toArray(),
             [
                 'url' => $ligazon->url,
+                'etiquetas' => $ligazon->etiquetasUsuario,
             ]);
         }
         return response()->json([
