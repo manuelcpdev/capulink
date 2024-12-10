@@ -65,6 +65,8 @@ Route::get('/csrf', function(Request $request){
 });
 
 Route::post('/usuarios/ligazons', [LigazonController::class, 'crearLigazonDeUsuario']);
+Route::get('/usuarios/ligazons', [LigazonController::class, 'obterLigazonsUsuarioConectado']);
+Route::get('/usuarios/ligazons/{name}', [LigazonController::class, 'obterLigazonsUsuario']);
 
 Route::post('/categorias', [CategoriaController::class, 'store']);
 

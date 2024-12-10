@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service'; // Importa o teu servizo
 import { NgFor, NgIf } from '@angular/common';
 import { LigazonsService } from './ligazons.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-ligazons',
@@ -13,10 +14,14 @@ import { LigazonsService } from './ligazons.service';
 export class LigazonsComponent implements OnInit {
   ligazonsCookies: any[] = [];
   ligazonsUsuario: any[] = [];
+  nameUrl: any;
 
-  constructor(private xestorCookies: XestorCookiesUsuarioService, private ligazonsService: LigazonsService) {}
+  constructor(private xestorCookies: XestorCookiesUsuarioService, private ligazonsService: LigazonsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    //Obter o nome de usuario na URL se o hai
+    this.nameUrl = this.route.snapshot.paramMap.get('name');
+
     // Obter as ligazóns gardadas nas cookies
     this.ligazonsCookies = this.xestorCookies.ligazonsCookies;
 
@@ -25,5 +30,15 @@ export class LigazonsComponent implements OnInit {
     if (usuario && usuario.ligazons) {
       this.ligazonsUsuario = usuario.ligazons;
     }
+
+    this.ligazonsService.obterLigazons(this.nameUrl).subscribe({
+      next: (value) => {
+          this.ligazonsUsuario = value.ligazons;
+      },
+      error: (err) => {
+          console.table(err)
+      },
+    });
   }
+
 }

@@ -80,44 +80,6 @@ class LigazonController extends Controller
         //
     }
 
-    /*
-    public function crearLigazonDeUsuario(Request $request) {
-
-
-
-        try {
-            DB::beginTransaction();
-            $ligazon = new Ligazon();
-            $ligazon->categoria_id = $request->input('idCategoria');
-            $ligazon->titulo = $request->input('tituloLigazon');
-            $ligazon->descricion = $request->input('descricion');
-            $ligazon->apropiado = $request->input('apropiado');
-            $ligazon->url = $request->input('url');
-            $ligazon->save();
-
-            $user = User::where('id', Auth::user()->getAuthIdentifier())->first();
-            $user->ligazons()->attach($ligazon->id, [
-                'titulo' => $ligazon->titulo,
-                'agochado' => $request->input('agochado'),
-                'apropiado' => $ligazon->apropiado,
-                'descricion' => $ligazon->descricion
-            ]);
-
-            DB::commit();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Error ao crear a ligazón',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-        return response()->json([
-            'message' => 'Ligazón creada',
-            'categoria' => $ligazon
-        ]);
-    }
-    */
     public function crearLigazonDeUsuario(Request $request)
     {
         // Validación de entrada
@@ -165,8 +127,19 @@ class LigazonController extends Controller
                 $ligazon->save();
             }
 
+
             // Adxuntar ligazón ao usuario autenticado
             $user = User::findOrFail(Auth::id());
+
+            $ligazonExisteUsuario = $user->ligazons()->wherePivot('ligazon_id', $ligazon->id)->exists();
+
+            if ($ligazonExisteUsuario) {
+                return response()->json([
+                    'mensaxe' => 'Xa existe esta ligazón para este usuario.',
+                    'error' => ['ligazon_usuario' => 'Xa existe esta ligazón para este usuario.'],
+                ], 403);
+            }
+
             $user->ligazons()->attach($ligazon->id, [
                 'titulo' => $validatedData['titulo'],
                 'agochado' => $validatedData['agochado'],
@@ -178,12 +151,13 @@ class LigazonController extends Controller
             $etiquetasInput = $validatedData['etiquetas'] ?? [];
             foreach ($etiquetasInput as $etiquetaTitulo) {
                 $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
-                if(!$etiqueta) {
+                if (!$etiqueta) {
                     //echo $etiquetaTitulo;
                     $etiqueta = new Etiqueta;
                     $etiqueta->titulo = $etiquetaTitulo;
                     $etiqueta->save();
                 }
+
                 // Insertar directamente na táboa intermedia
                 DB::table('usuario_ligazon_etiqueta')->insert([
                     'user_id' => $user->id,
@@ -212,8 +186,31 @@ class LigazonController extends Controller
         }
     }
 
+    public function obterLigazonsUsuarioConectado()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        if (!$user) {
+            return response()->json([
+                'mensaxe' => 'Non hai un usuario conectado',
+                'error' => '',
+            ], 403);
+        }
 
-
+        //$ligazons = $user->ligazons()->get();
+        $ligazons = $user->ligazons;
+        $ligazonsPivot = [];
+        foreach($ligazons as $ligazon) {
+            $ligazonsPivot[] = array_merge(
+                $ligazon->pivot->toArray(),
+            [
+                'url' => $ligazon->url,
+            ]);
+        }
+        return response()->json([
+            'mensaxe' => 'Ligazóns do usuario obtidas.',
+            'ligazons' => $ligazonsPivot,
+        ]);
+    }
 
     public function ObterLigazonsUsuario($name)
     {
@@ -262,11 +259,12 @@ class LigazonController extends Controller
             ->get();
 
         // Estruturar a resposta
+        echo $usuario->perfil;
         $resultado = [
             'usuario' => [
                 'id' => $usuario->id,
                 'name' => $usuario->name,
-                'perfil_visibilidade' => $usuario->perfil->visibilidade,
+                'perfil_visibilidade' => $usuario->perfil()->visibilidade,
             ],
             'ligazons' => $ligazonsUsuario,
         ];
