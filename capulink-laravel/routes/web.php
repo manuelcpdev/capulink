@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group( function () {
 
 Route::resource('administracion/ligazon/', PerfilController::class);
 
-Route::get('/usuarios/:id/ligazons');
+Route::get('/usuarios/:id/ligazons', [LigazonController::class, 'obterLigazonsUsuario']);
 Route::get('/usuarios/:id/perfil');
 Route::get('/grupos/:id');
 Route::get('/grupos'); //

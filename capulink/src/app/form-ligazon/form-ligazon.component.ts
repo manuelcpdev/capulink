@@ -3,6 +3,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, NgForm, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticacionService } from '../autenticacion.service';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service';
+import { LigazonsService } from '../ligazons/ligazons.service';
 
 @Component({
   selector: 'app-form-ligazon',
@@ -17,7 +18,16 @@ export class FormLigazonComponent implements OnChanges {
       this.xestorCookies.engadirLigazon(formulario.value);
     }
     if(this.opcion=='usuario') {
-
+      console.log(formulario.value['etiquetas'])
+      console.log('A opción é usuario')
+      this.ligazonsService.crearLigazon(formulario, 'usuario').subscribe({
+        next: (value) => {
+            console.log(value)
+        },
+        error: (err) => {
+            console.log(err)
+        },
+      });
     }
   }
   @Input() opcion: string = ''; // Recibe a opción seleccionada
@@ -75,14 +85,14 @@ export class FormLigazonComponent implements OnChanges {
 
   errosServidor: any;
 
-  constructor(private autenticacionService: AutenticacionService, private xestorCookies: XestorCookiesUsuarioService) {
+  constructor(private autenticacionService: AutenticacionService, private xestorCookies: XestorCookiesUsuarioService, private ligazonsService: LigazonsService) {
     this.formulario = new FormGroup({
       titulo: new FormControl('', this.validacions.titulo),
       url: new FormControl('', this.validacions.url),
       descricion: new FormControl('', this.validacions.descricion),
       etiquetas: new FormControl('', this.validacions.etiquetas),
-      agochado: new FormControl(false, this.validacions.agochado),
-      apropiado: new FormControl(false, this.validacions.apropiado),
+      agochado: new FormControl(true, this.validacions.agochado),
+      apropiado: new FormControl(true, this.validacions.apropiado),
     });
 
     this.autenticacionService.usuarioConectado$.subscribe((estado) => {
@@ -111,12 +121,26 @@ export class FormLigazonComponent implements OnChanges {
       this.formulario.removeControl('apropiado');
     } else if (this.opcion === 'usuario') {
       //this.formulario.removeControl('descricion');
-      this.formulario.addControl('etiquetas', new FormControl(''));
-    } else if (this.opcion === 'admin') {
-      this.formulario.addControl('agochado', new FormControl(false));
-      this.formulario.addControl('apropiado', new FormControl(false));
-      this.formulario.addControl('descricion', new FormControl(''));
-      this.formulario.addControl('etiquetas', new FormControl(''));
+      this.formulario.addControl('etiquetas', new FormControl(this.validacions.etiquetas));
+      this.formulario.addControl('agochado', new FormControl(true, this.validacions.agochado));
+      this.formulario.addControl('apropiado', new FormControl(true, this.validacions.agochado));
+    } else if (this.opcion === 'grupo') {
+      this.formulario.addControl('agochado', new FormControl(this.validacions.agochado));
+      this.formulario.addControl('apropiado', new FormControl(true, this.validacions.apropiado));
+      this.formulario.addControl('descricion', new FormControl(true, this.validacions.descricion));
+      this.formulario.addControl('etiquetas', new FormControl(this.validacions.etiquetas));
     }
   }
+
+  convertirEtiquetas(): void {
+    const etiquetasValor = this.formulario.get('etiquetas')?.value;
+    const etiquetasArray: string[] = etiquetasValor
+      ? etiquetasValor.split(',').map((etiqueta: string) => etiqueta.trim())
+      : [];
+    this.formulario.patchValue({
+      etiquetas: etiquetasArray
+    });
+  }
+
+
 }
