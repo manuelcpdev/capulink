@@ -176,13 +176,7 @@ class LigazonController extends Controller
 
             // Procesar etiquetas e asociar á ligazón
             $etiquetasInput = $validatedData['etiquetas'] ?? [];
-            $etiquetasIds = [];
             foreach ($etiquetasInput as $etiquetaTitulo) {
-           /*     $etiqueta = Etiqueta::first(
-                    ['titulo' => $etiquetaTitulo], // Buscar por título ou crear
-                    ['titulo' => $etiquetaTitulo]
-                );
-*/
                 $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
                 if(!$etiqueta) {
                     //echo $etiquetaTitulo;
@@ -190,7 +184,6 @@ class LigazonController extends Controller
                     $etiqueta->titulo = $etiquetaTitulo;
                     $etiqueta->save();
                 }
-                echo "Eeeeel id es: " . $etiqueta->id . " " . $etiqueta->titulo;
                 // Insertar directamente na táboa intermedia
                 DB::table('usuario_ligazon_etiqueta')->insert([
                     'user_id' => $user->id,
