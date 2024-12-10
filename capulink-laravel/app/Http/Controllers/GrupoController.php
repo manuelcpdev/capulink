@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grupo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -332,5 +333,138 @@ class GrupoController extends Controller
         ], 500);
     }
 }
+
+public function getGruposUsuario()
+{
+    try {
+        // Obter o usuario autenticado
+        $usuarioId = Auth::id();
+
+        // Grupos públicos
+        $gruposPublicos = Grupo::where('visibilidade', 'publico')->get();
+
+        // Grupos dos que é creador
+        $gruposCreados = Grupo::where('user_id', $usuarioId)->get();
+
+        // Grupos nos que é participante
+        $gruposParticipados = Grupo::whereHas('users', function ($query) use ($usuarioId) {
+            $query->where('user_id', $usuarioId);
+        })->get();
+
+        // Unir todos os grupos sen duplicados
+        $todosGrupos = $gruposPublicos
+            ->merge($gruposCreados)
+            ->merge($gruposParticipados)
+            ->unique('id'); // Evitar duplicados
+
+        return response()->json([
+            'message' => 'Grupos do usuario recuperados correctamente.',
+            'grupos' => $todosGrupos,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao recuperar os grupos do usuario.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function getGruposOfCreator()
+{
+    try {
+        // Obter o usuario autenticado
+        $usuarioId = Auth::id();
+
+        // Recuperar os grupos creados polo usuario
+        $gruposCreados = Grupo::where('user_id', $usuarioId)->get();
+
+        return response()->json([
+            'message' => 'Grupos creados polo usuario recuperados correctamente.',
+            'grupos' => $gruposCreados,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao recuperar os grupos creados polo usuario.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function getGruposWithMembership()
+{
+    try {
+        // Obter o ID do usuario autenticado
+        $usuario = User::where('id', Auth::id())->first();
+
+        $gruposComoMembro = $usuario->grupos()->get();
+        return response()->json([
+            'message' => 'Grupos nos que o usuario é membro recuperados correctamente.',
+            'grupos' => $gruposComoMembro
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao recuperar os grupos nos que o usuario é membro.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function getGruposPublicos()
+{
+    try {
+        // Recuperar todos os grupos con visibilidade pública
+        $gruposPublicos = Grupo::where('visibilidade', 'publico')->get();
+
+        return response()->json([
+            'message' => 'Grupos públicos recuperados correctamente.',
+            'grupos' => $gruposPublicos,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao recuperar os grupos públicos.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function getGrupo($id)
+{
+    try {
+        // Buscar o grupo polo seu ID
+        $grupo = Grupo::findOrFail($id);
+
+        // Verificar se o grupo é público
+        if ($grupo->visibilidade === 'publico') {
+            return response()->json([
+                'message' => 'Grupo público recuperado correctamente.',
+                'grupo' => $grupo,
+            ]);
+        }
+
+        // Verificar se o usuario conectado é o creador, un administrador ou un membro
+        $user = Auth::user();
+
+        $isCreador = $grupo->user_id === $user->id; // O usuario é o creador?
+        $isMiembro = $grupo->users()->where('user_id', $user->id)->exists(); // O usuario é membro?
+
+        if ($isCreador || $isMiembro || $user->is_admin) {
+            return response()->json([
+                'message' => 'Acceso permitido. Grupo recuperado correctamente.',
+                'grupo' => $grupo,
+            ]);
+        }
+
+        // Se non cumpre ningunha condición, devolver erro de acceso
+        return response()->json([
+            'message' => 'Acceso denegado. Non tes permisos para ver este grupo.',
+        ], 403);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao recuperar o grupo.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 
 }

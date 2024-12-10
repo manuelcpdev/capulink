@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\LigazonController;
 use App\Http\Controllers\PerfilController;
+use App\Models\Grupo;
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,4 +74,13 @@ Route::post('/grupo/eliminar', [GrupoController::class, 'deleteGrupo']); // admi
 Route::post('/grupo/unirse', [GrupoController::class, 'joinGrupo']);
 Route::post('/grupo/sair', [GrupoController::class, 'forfeitGrupo']);
 
-Route::get('/grupo', [GrupoController::class, 'forfeitGrupo']);
+//Por probar
+Route::get('/grupos/usuario/miembro', [GrupoController::class, 'getGruposWithMembership']);
+Route::get('/grupos/usuario/creador', [GrupoController::class, 'getGruposOfCreator']);
+Route::get('/grupos/usuario', [GrupoController::class, 'getGruposUsuario']); //todos los grupos del usuario
+Route::get('/grupos/publicos', [GrupoController::class, 'getGruposPublicos']);
+Route::get('/grupo/{id}', [GrupoController::class, 'getGrupo']);
+
+// Ligazons de grupo
+// Etiquetas de grupo
+// Etiquetas de las ligazons del grupo
