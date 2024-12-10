@@ -15,7 +15,8 @@ import { PerfilService } from './perfil.service';
 export class PerfilComponent {
   nameUrl: string | null = null;
   name: string|null = null;
-  foto: string | null = '';
+  //Foto por defecto se o usuario non ten
+  foto: string | null = 'https://img.pokemondb.net/sprites/sun-moon/normal/cubone.png';
   error: string | null = null;
   constructor(private route: ActivatedRoute, private perfilService: PerfilService) {}
 
@@ -24,7 +25,10 @@ export class PerfilComponent {
     this.perfilService.obterPerfil(this.nameUrl).subscribe({
       next: (resposta) => {
         this.name = resposta.name.toString();
-        this.foto = resposta.foto;
+        if (resposta.foto && resposta.foto.trim() != '') {
+          this.foto = resposta.foto;
+        }
+
       },
       error: (resposta) => {
         this.error = resposta.error;

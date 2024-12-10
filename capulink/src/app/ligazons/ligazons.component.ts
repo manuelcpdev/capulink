@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service'; // Importa o teu servizo
 import { NgFor, NgIf } from '@angular/common';
+import { LigazonsService } from './ligazons.service';
 
 @Component({
   selector: 'app-ligazons',
@@ -13,7 +14,7 @@ export class LigazonsComponent implements OnInit {
   ligazonsCookies: any[] = [];
   ligazonsUsuario: any[] = [];
 
-  constructor(private xestorCookies: XestorCookiesUsuarioService) {}
+  constructor(private xestorCookies: XestorCookiesUsuarioService, private ligazonsService: LigazonsService) {}
 
   ngOnInit(): void {
     // Obter as ligazóns gardadas nas cookies
