@@ -89,4 +89,10 @@ export class LigazonsService {
     return this.http.post<any>(urlChamada, formulario.value, this.autenticacionService.opcionsComuns());
   }
 
+  eliminarLigazonUsuario (index: number) {
+    const endpoint = `${this.autenticacionService.api}/usuarios/ligazons/eliminar`;
+    const arrLigazons: Array<number> = [index];
+    return this.http.post<any>(endpoint, {'ligazons': arrLigazons}, this.autenticacionService.opcionsComuns());
+  }
+
 }

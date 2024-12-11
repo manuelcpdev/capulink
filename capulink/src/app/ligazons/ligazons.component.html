@@ -7,13 +7,28 @@
     <!-- Tarxeta para ligazóns gardadas en cookies -->
     <div class="carta" *ngIf="ligazonsCookies.length > 0">
       <div class="titulo-carta">
-        <h2>Ligazóns gardadas</h2>
+        <h2>Ligazóns nas cookies</h2>
       </div>
       <div class="contenedor-ligazons">
-        <div *ngFor="let ligazon of ligazonsCookies">
-          <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+        <div *ngFor="let ligazon of ligazonsCookies; let i = index" class="contenedor-ligazons-fillo">
+          <div class="contenedor-ligazons-fillo-header">
+            <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+            <div class="contenedor-ligazons-fillo-header-opcions">
+              <button class="editar-ligazon"><i class="fas fa-edit"></i></button>
+              <button class="eliminar-ligazon" (click)="this.xestorCookies.eliminarLigazon(i)"><i class="fa-solid fa-delete-left"></i></button>
+            </div>
+          </div>
           <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
-          <button><i class="fa-solid fa-delete-left"></i></button>
+          <p (click)="toggleDescriptionCookies(i)" class="toggle-descricion">
+            <i
+              class="fa-solid fa-caret-right"
+              [class.fa-rotate-90]="descricionVisiblesCookies[i]"
+            ></i>
+            Descrición
+          </p>
+          <p *ngIf="descricionVisiblesCookies[i]" class="description">
+            {{ ligazon.descricion }}
+          </p>
         </div>
       </div>
     </div>
@@ -24,9 +39,25 @@
         <h2>Ligazóns do usuario</h2>
       </div>
       <div class="contenedor-ligazons">
-        <div *ngFor="let ligazon of ligazonsUsuario">
-          <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+        <div *ngFor="let ligazon of ligazonsUsuario; let i = index" class="contenedor-ligazons-fillo">
+          <div class="contenedor-ligazons-fillo-header">
+            <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
+            <div class="contenedor-ligazons-fillo-header-opcions">
+              <button class="editar-ligazon"><i class="fas fa-edit"></i></button>
+              <button class="eliminar-ligazon" (click)="this.eliminarLigazonUsuario(ligazon.ligazon_id)"><i class="fa-solid fa-delete-left"></i></button>
+            </div>
+          </div>
           <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
+          <p (click)="toggleDescricionUsuario(i)" class="toggle-descricion">
+            <i
+              class="fa-solid fa-caret-right"
+              [class.fa-rotate-90]="descricionVisiblesUsuario[i]"
+            ></i>
+            Descrición
+          </p>
+          <p *ngIf="descricionVisiblesUsuario[i]" class="description">
+            {{ ligazon.descricion }}
+          </p>
         </div>
       </div>
     </div>
