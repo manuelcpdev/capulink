@@ -1,0 +1,24 @@
+<div class="contenedor-centrado">
+  <h1 id="titulo">Grupos</h1>
+  <button (click)="formGrupoVisible = !formGrupoVisible">Crear grupo</button>
+  <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
+    <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
+      <app-form-grupo [popupActivo]="formGrupoVisible"
+        (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
+    </div>
+  </div>
+  <div id="contenedor-cartas">
+    <div *ngIf="gruposUsuario" class="carta">
+      <div class="titulo-carta">
+        <h2>Os teus grupos</h2>
+      </div>
+      <div class="contenedor-ligazons">
+        <div *ngFor="let grupo of gruposUsuario; index as i" class="">
+          <h2>{{grupo.titulo}}</h2>
+          <p>{{grupo.descricion}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

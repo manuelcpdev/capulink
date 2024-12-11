@@ -6,6 +6,7 @@ import { ConexionComponent } from './conexion/conexion.component';
 import { autenticacionGuard } from './autenticacion.guard';
 import { AdministracionComponent } from './administracion/administracion.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { GruposComponent } from './grupos/grupos.component';
 
 export const routes: Routes = [
   {path: '', component: InicioComponent},
@@ -17,5 +18,7 @@ export const routes: Routes = [
   {path: 'perfil/:name', component: PerfilComponent},
   {path: 'ligazons/', component: LigazonsComponent},
   {path: 'ligazons/:name', component: LigazonsComponent},
+  {path: 'grupos', component: GruposComponent},
+  {path: 'grupos/:name', component: GruposComponent},
   {path: '*', component: InicioComponent},
 ];
