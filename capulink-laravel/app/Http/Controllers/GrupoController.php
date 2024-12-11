@@ -368,7 +368,7 @@ class GrupoController extends Controller
                         $grupo->etiquetas()->detach($etiqueta->id);
 
                         // Eliminar a etiqueta se non está asociada a ningún outro grupo
-                        if (!$etiqueta->grupos()->exists()) {
+                        if (!$etiqueta->grupos()->exists() && !$etiqueta->ligazons()->exists()) {
                             $etiqueta->delete();
                         }
                     }
