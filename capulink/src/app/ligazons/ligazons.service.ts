@@ -4,6 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Route } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FormGroup } from '@angular/forms';
+import { FormValues } from '../shared/interfaces/form-values';
+interface LigazonObtida {
+  ligazon: FormValues,
+  mensaxe: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +17,11 @@ export class LigazonsService {
   ligazonsUsuario = [];
   name: string | null = null;
   constructor(private autenticacionService: AutenticacionService, private http: HttpClient, private route: ActivatedRoute) { }
+
+  obterLigazon(index: number) {
+    const endpoint = `${this.autenticacionService.api}/usuario/ligazon/${index}`
+    return this.http.get<LigazonObtida>(endpoint, this.autenticacionService.opcionsComuns());
+  }
   /**
    * Columna:Taboa
    * name:users
@@ -65,13 +75,13 @@ export class LigazonsService {
 
   }
 
-  actualizarLigazon(formulario: FormGroup, tipo: string, id: number) {
+  actualizarLigazonUsuario(formulario: FormGroup, tipo: string, id: number) {
     const api = this.autenticacionService.api;
     let urlChamada = api;
 
     switch (tipo) {
       case 'usuario': {
-        urlChamada += `/usuarios/ligazons/${id}`;
+        urlChamada += `/usuarios/ligazon`;
       }
         break;
 
@@ -85,7 +95,6 @@ export class LigazonsService {
       }
     }
 
-    // Realiza a chamada POST ou PATCH para actualizar
     return this.http.post<any>(urlChamada, formulario.value, this.autenticacionService.opcionsComuns());
   }
 

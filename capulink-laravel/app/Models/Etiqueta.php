@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Etiqueta extends Model
 {
-    protected $fillable = ['etiqueta'];
+    protected $fillable = ['titulo'];
     // Relación moitos a moitos cos grupos
     public function grupos()
     {

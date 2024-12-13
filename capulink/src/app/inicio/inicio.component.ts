@@ -21,7 +21,7 @@ export class InicioComponent {
     this.autenticacionService.usuarioConectado$.subscribe((estado) => {
       this.usuarioConectado = estado;
       if (this.usuarioConectado) {
-        this.opcions = ['cookies', 'usuario', 'grupos'];
+        this.opcions = ['cookies', 'usuario', 'grupo'];
       } else {
         this.opcions = ['cookies'];
       }

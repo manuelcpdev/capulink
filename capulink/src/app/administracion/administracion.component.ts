@@ -1,12 +1,23 @@
 import { Component } from '@angular/core';
+import { MenuOpcions } from './enums/menu-opcions';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TabsComponent } from '../tabs/tabs.component';
 
 @Component({
   selector: 'app-administracion',
-  standalone: true,
-  imports: [],
   templateUrl: './administracion.component.html',
-  styleUrl: './administracion.component.scss'
+  styleUrls: ['./administracion.component.scss'],
+  standalone: true,
+  imports: [NgFor, NgIf, CommonModule, ReactiveFormsModule, TabsComponent],
 })
 export class AdministracionComponent {
+  menuOpcions = MenuOpcions; // Facer dispoñible o enum no template
+  opcionActual: string = MenuOpcions.Inicio; // A opción predeterminada
 
+  opcionsMenu = Object.values(MenuOpcions); // Obter as opcións do enum como lista de strings
+
+  cambiarOpcion(opcion: string) {
+    this.opcionActual = opcion; // Cambiar a opción actual
+  }
 }

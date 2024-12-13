@@ -14,73 +14,8 @@ use App\Models\Grupo;
 
 class LigazonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $ligazon = Ligazon::all();
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        /*
-        // Obtemos as expresións regulares prohibidas
-        $regexProhibidas = DB::table('regex_ligazons_prohibdas')->pluck('regex')->toArray();
-
-        // Comprobamos se a ligazón coincide cunha expresión regular prohibida
-        foreach ($regexProhibidas as $regex) {
-            if (preg_match("/$regex/", $request->url)) {
-                return response()->json(['error' => "A ligazón '{$request->url}' está prohibida."], 400);
-            }
-        }
-        */
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ligazon $ligazon)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ligazon $ligazon)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ligazon $ligazon)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Ligazon $ligazon)
-    {
-        //
-    }
-
-    public function crearLigazonDeUsuario(Request $request)
+    public function crearLigazonUsuario(Request $request)
     {
         // Validación de entrada
         $validator = Validator::make($request->all(), [
@@ -163,7 +98,7 @@ class LigazonController extends Controller
                     'user_id' => $user->id,
                     'ligazon_id' => $ligazon->id,
                     'etiqueta_id' => $etiqueta->id,
-                    'apropiado' => true, // Aquí podes poñer o valor que queiras
+                    'apropiado' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -186,34 +121,85 @@ class LigazonController extends Controller
         }
     }
 
-    public function updateLigazonDeUsuario(Request $request)
+    /**
+     * Obtén os datos relacionados a unha ligazón
+     */
+    public function obterLigazonUsuario($id)
     {
-        // Validar los datos de entrada
+        // Obter o usuario autenticado
+        $user = User::findOrFail(Auth::id());
+
+        // Obter a ligazón da táboa intermedia con campos personalizados
+        $ligazon = $user->ligazons()
+            ->where('ligazon_id', $id)
+            ->first();
+
+        if (!$ligazon) {
+            return response()->json([
+                'mensaxe' => 'Ligazón non atopada ou non tes permisos para acceder a ela.',
+            ], 404);
+        }
+
+        // Obter as etiquetas relacionadas usando a táboa intermedia
+        $etiquetas = $ligazon
+            ->etiquetasUsuario()
+            ->select(
+                'etiquetas.id as etiqueta_id', // Nome cualificado para evitar ambigüidade
+                'etiquetas.titulo',
+                'etiquetas.created_at as etiqueta_created_at',
+                'etiquetas.updated_at as etiqueta_updated_at'
+            )
+            ->get();
+
+        // Datos a devolver
+        $response = [
+            'ligazon_id' => $ligazon->pivot->ligazon_id, //Campo do pivot
+            'user_id' => $ligazon->pivot->user_id, //Campo do pivot
+            'titulo' => $ligazon->pivot->titulo, // Campo do pivot
+            'apropiado' => $ligazon->pivot->apropiado, // Campo do pivot
+            'agochado' => $ligazon->pivot->agochado, // Campo do pivot
+            'descricion' => $ligazon->pivot->descricion, // Campo do pivot
+            'url' => $ligazon->url, // Campo da ligazón
+            'etiquetas' => $etiquetas, // Lista de etiquetas
+        ];
+
+        return response()->json([
+            'mensaxe' => 'Ligazón obtida con éxito',
+            'ligazon' => $response,
+        ]);
+    }
+
+
+
+    public function actualizarLigazonUsuario(Request $request)
+    {
+        // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
-            'ligazon_id' => 'required|integer|exists:ligazons,id',
+            'ligazon_id' => 'required|integer|exists:usuario_ligazon,ligazon_id',
             'titulo' => 'nullable|string|max:255',
             'descricion' => 'nullable|string|max:1000',
             'agochado' => 'nullable|boolean',
             'apropiado' => 'nullable|boolean',
-            'etiquetas_agregar' => 'nullable|array', // Etiquetas a agregar
+            'etiquetas_agregar' => 'nullable|array', // Etiquetas para engadir
             'etiquetas_agregar.*' => 'string|max:50',
-            'etiquetas_eliminar' => 'nullable|array', // Etiquetas a eliminar
+            'etiquetas_eliminar' => 'nullable|array', // Etiquetas para eliminar
             'etiquetas_eliminar.*' => 'string|max:50',
+            'etiquetas' => 'nullable',
         ], [
-            'ligazon_id.required' => 'El ID de la ligazón es obligatorio.',
-            'ligazon_id.exists' => 'La ligazón especificada no existe.',
-            'titulo.string' => 'El título debe ser una cadena de texto.',
-            'titulo.max' => 'El título no puede tener más de 255 caracteres.',
-            'descricion.string' => 'La descripción debe ser una cadena de texto.',
-            'descricion.max' => 'La descripción no puede tener más de 1000 caracteres.',
-            'etiquetas_agregar.*.max' => 'Cada etiqueta a agregar puede tener un máximo de 50 caracteres.',
-            'etiquetas_eliminar.*.max' => 'Cada etiqueta a eliminar puede tener un máximo de 50 caracteres.',
+            'ligazon_id.required' => 'O ID da ligazón é obrigatorio.',
+            'ligazon_id.exists' => 'A ligazón especificada non existe.',
+            'titulo.string' => 'O título debe ser unha cadea de texto.',
+            'titulo.max' => 'O título non pode ter máis de 255 caracteres.',
+            'descricion.string' => 'A descrición debe ser unha cadea de texto.',
+            'descricion.max' => 'A descrición non pode ter máis de 1000 caracteres.',
+            'etiquetas_agregar.*.max' => 'Cada etiqueta a engadir pode ter un máximo de 50 caracteres.',
+            'etiquetas_eliminar.*.max' => 'Cada etiqueta a eliminar pode ter un máximo de 50 caracteres.',
         ]);
 
-        // Retornar errores de validación si existen
+        // Retornar erros de validación se existen
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error de validación',
+                'message' => 'Erro de validación',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -221,20 +207,20 @@ class LigazonController extends Controller
         $validatedData = $validator->validated();
 
         try {
-            DB::beginTransaction(); // Inicia la transacción
+            DB::beginTransaction(); // Iniciar a transacción
 
-            // Obtener el usuario autenticado
+            // Obter o usuario autenticado
             $user = User::findOrFail(Auth::id());
 
-            // Verificar si la ligazón está asociada al usuario
+            // Verificar se a ligazón está asociada ao usuario
             $ligazon = $user->ligazons()->where('ligazon_id', $validatedData['ligazon_id'])->first();
             if (!$ligazon) {
                 return response()->json([
-                    'message' => 'La ligazón no está asociada al usuario.',
+                    'message' => 'A ligazón non está asociada ao usuario.',
                 ], 404);
             }
 
-            // Actualizar los datos de la tabla intermedia
+            // Actualizar os datos da táboa intermedia
             $pivotData = [];
             if (isset($validatedData['titulo'])) {
                 $pivotData['titulo'] = $validatedData['titulo'];
@@ -253,17 +239,17 @@ class LigazonController extends Controller
                 $user->ligazons()->updateExistingPivot($validatedData['ligazon_id'], $pivotData);
             }
 
-            // Gestionar etiquetas
+            // Xestionar etiquetas
             if (isset($validatedData['etiquetas_agregar'])) {
                 foreach ($validatedData['etiquetas_agregar'] as $etiquetaTitulo) {
                     $etiqueta = Etiqueta::firstOrCreate(['titulo' => $etiquetaTitulo]);
 
-                    // Insertar relación en la tabla intermedia
+                    // Inserir relación na táboa intermedia
                     DB::table('usuario_ligazon_etiqueta')->insertOrIgnore([
                         'user_id' => $user->id,
                         'ligazon_id' => $ligazon->id,
                         'etiqueta_id' => $etiqueta->id,
-                        'apropiado' => true, // Puedes ajustar este valor según sea necesario
+                        'apropiado' => true,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -274,14 +260,14 @@ class LigazonController extends Controller
                 foreach ($validatedData['etiquetas_eliminar'] as $etiquetaTitulo) {
                     $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
                     if ($etiqueta) {
-                        // Eliminar la relación en la tabla intermedia
+                        // Eliminar a relación na táboa intermedia
                         DB::table('usuario_ligazon_etiqueta')
                             ->where('user_id', $user->id)
                             ->where('ligazon_id', $ligazon->id)
                             ->where('etiqueta_id', $etiqueta->id)
                             ->delete();
 
-                        // Eliminar la etiqueta si no está asociada a ninguna otra ligazón
+                        // Eliminar a etiqueta se non está asociada a ningunha outra ligazón
                         if (!$etiqueta->ligazons()->exists()) {
                             $etiqueta->delete();
                         }
@@ -289,39 +275,40 @@ class LigazonController extends Controller
                 }
             }
 
-            DB::commit(); // Confirmar la transacción
+            DB::commit(); // Confirmar a transacción
 
             return response()->json([
-                'message' => 'La ligazón fue actualizada correctamente.',
+                'message' => 'A ligazón foi actualizada correctamente.',
                 'ligazon' => $ligazon,
-                'etiquetas' => $ligazon->etiquetas->pluck('titulo'), // Retornar las etiquetas actualizadas
+                'etiquetas' => $ligazon->etiquetasUsuario->pluck('titulo'), // Retornar as etiquetas actualizadas
             ]);
         } catch (\Exception $e) {
-            DB::rollBack(); // Revertir cambios si ocurre un error
+            DB::rollBack(); // Reverter cambios se ocorre un erro
             return response()->json([
-                'message' => 'Error al actualizar la ligazón.',
+                'message' => 'Erro ao actualizar a ligazón.',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
 
-    public function deleteLigazonsDeUsuario(Request $request)
+
+    public function eliminarLigazonsUsuario(Request $request)
     {
         // Validación de entrada
         $validator = Validator::make($request->all(), [
             'ligazons' => 'required|array', // Debe ser un array
             'ligazons.*' => 'integer|exists:ligazons,id', // Cada ID debe existir
         ], [
-            'ligazons.required' => 'Es necesario proporcionar las ligazons a eliminar.',
-            'ligazons.*.exists' => 'Algunas de las ligazons especificadas no existen.',
+            'ligazons.required' => 'É necesario proporcionar as ligazóns a eliminar.',
+            'ligazons.*.exists' => 'Algunhas das ligazóns especificadas non existen.',
         ]);
 
         var_dump($request->all());
 
-        // Retornar errores de validación si existen
+        // Retornar erros de validación se existen
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error de validación',
+                'message' => 'Erro de validación',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -329,56 +316,56 @@ class LigazonController extends Controller
         $validatedData = $validator->validated();
 
         try {
-            DB::beginTransaction(); // Inicia la transacción
+            DB::beginTransaction(); // Iniciar a transacción
 
-            // Obtener el usuario autenticado
+            // Obter o usuario autenticado
             $user = User::findOrFail(Auth::id());
 
-            // Obtener las ligazons del usuario que se desean eliminar
+            // Obter as ligazóns do usuario que se desexan eliminar
             $ligazonsAEliminar = $user->ligazons()
                 ->whereIn('ligazon_id', $validatedData['ligazons'])
                 ->get();
 
             if ($ligazonsAEliminar->isEmpty()) {
                 return response()->json([
-                    'message' => 'No se encontraron ligazons asociadas al usuario para eliminar.',
+                    'message' => 'Non se atoparon ligazóns asociadas ao usuario para eliminar.',
                 ], 404);
             }
 
-            // Eliminar las relaciones en la tabla intermedia (usuario-ligazón)
+            // Eliminar as relacións na táboa intermedia (usuario_ligazón)
             foreach ($ligazonsAEliminar as $ligazon) {
                 $user->ligazons()->detach($ligazon->id);
 
-                // Eliminar etiquetas asociadas al usuario-ligazón
+                // Eliminar etiquetas asociadas ao usuario_ligazón
                 DB::table('usuario_ligazon_etiqueta')
                     ->where('user_id', $user->id)
                     ->where('ligazon_id', $ligazon->id)
                     ->delete();
 
-                // Verificar si la ligazón queda sin usuarios asociados
+                // Verificar se a ligazón queda sen usuarios asociados
                 if (!$ligazon->usuarios()->exists()) {
-                    // Eliminar etiquetas asociadas si ya no tienen relaciones
+                    // Eliminar etiquetas asociadas se xa non teñen relacións
                     foreach ($ligazon->etiquetasUsuario as $etiqueta) {
                         if (!$etiqueta->ligazons()->exists()) {
                             $etiqueta->delete();
                         }
                     }
 
-                    // Eliminar la ligazón
+                    // Eliminar a ligazón
                     $ligazon->delete();
                 }
             }
 
-            DB::commit(); // Confirmar la transacción
+            DB::commit(); // Confirmar a transacción
 
             return response()->json([
-                'message' => 'Las ligazons fueron eliminadas correctamente.',
-                'ligazons_eliminadas' => $ligazonsAEliminar->pluck('id'), // IDs de las ligazons eliminadas
+                'message' => 'As ligazóns foron eliminadas correctamente.',
+                'ligazons_eliminadas' => $ligazonsAEliminar->pluck('id'), // IDs das ligazóns eliminadas
             ]);
         } catch (\Exception $e) {
-            DB::rollBack(); // Revertir cambios si ocurre un error
+            DB::rollBack(); // Reverter cambios se ocorre un erro
             return response()->json([
-                'message' => 'Error al eliminar las ligazons.',
+                'message' => 'Erro ao eliminar as ligazóns.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -476,6 +463,7 @@ class LigazonController extends Controller
             ], 500);
         }
     }
+
 
 
     public function updateLigazonDeGrupo(Request $request)
@@ -761,9 +749,6 @@ class LigazonController extends Controller
 
         return response()->json($resultado, 200);
     }
-
-
-
 
 
     public function obterLigazonsPorGrupo($grupoId)

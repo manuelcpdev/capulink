@@ -1,6 +1,6 @@
 @import '../../styles.scss';
 
-.tabs {
+.pestanas {
   display: flex;
   flex-direction: row;
 
@@ -12,18 +12,19 @@
 
   list-style: none;
 
-  ul {
+  &__lista {
     display: flex;
     gap: 3px;
     padding: 0;
 
     list-style: none;
   }
-  li {
+
+  &__elemento {
     padding: 5px 20px;
 
     border: 1px solid #333;
-    border-radius: 10px 20px 0px 0px;
+    border-radius: 10px 20px 0 0;
 
     cursor: pointer;
 
@@ -31,7 +32,7 @@
       background-color: #aaffc7;
     }
 
-    &.activo {
+    &--activo {
       background-color: #00fff36e;
     }
   }

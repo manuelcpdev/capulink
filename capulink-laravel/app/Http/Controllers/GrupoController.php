@@ -30,7 +30,7 @@ class GrupoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function crearGrupo(Request $request)
 {
     // Validación de entrada
     $validator = Validator::make($request->all(), [
@@ -134,7 +134,7 @@ class GrupoController extends Controller
         //
     }
 
-    public function joinGrupo(Request $request) {
+    public function unirGrupo(Request $request) {
 
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
@@ -181,7 +181,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function forfeitGrupo(Request $request) {
+    public function abandoarGrupo(Request $request) {
 
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
@@ -235,7 +235,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function deleteGrupo(Request $request)
+    public function eliminarGrupo(Request $request)
     {
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
@@ -285,7 +285,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function updateGrupo(Request $request){
+    public function actualizarGrupo(Request $request){
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
             'grupo_id' => 'required|integer|exists:grupos,id',
@@ -395,7 +395,7 @@ class GrupoController extends Controller
     }
 
 
-    public function getGruposUsuario()
+    public function obterGruposUsuario()
     {
         try {
             // Obter o usuario autenticado
@@ -430,7 +430,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function getGruposOfCreator()
+    public function obterGruposUsuarioCreadorConectado()
     {
         try {
             // Obter o usuario autenticado
@@ -451,7 +451,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function getGruposWithMembership()
+    public function obterGruposUsuarioMembresia()
     {
         try {
             // Obter o ID do usuario autenticado
@@ -470,7 +470,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function getGruposPublicos()
+    public function obterGruposPublicos()
     {
         try {
             // Recuperar todos os grupos con visibilidade pública
@@ -488,7 +488,7 @@ class GrupoController extends Controller
         }
     }
 
-    public function getGrupo($id){
+    public function obterGrupo($id){
         try {
             // Buscar o grupo polo seu ID
             $grupo = Grupo::findOrFail($id);

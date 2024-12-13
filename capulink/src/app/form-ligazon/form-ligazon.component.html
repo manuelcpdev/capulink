@@ -1,3 +1,4 @@
+<h2 *ngIf="visibilidade && modo=='edicion'">Editando ligazón</h2>
 <form [formGroup]="formulario" id="form-ligazon" (submit)="gardarLigazon(formulario)">
   <!-- Campo Título -->
   <div>
@@ -26,10 +27,12 @@
 
   <!-- Campo Etiquetas -->
   <div *ngIf="formulario.get('etiquetas')">
-    <label for="etiquetas">Etiquetas</label>
-    <input id="etiquetas" formControlName="etiquetas" (blur)="convertirEtiquetas()" />
+    <label for="etiquetas">Etiquetas (separe con comas)</label>
+    <input id="etiquetas" formControlName="etiquetas"  />
   </div>
-
+  <div *ngIf="formulario.get('etiquetas')?.hasError('duplicados')">
+    <p class="error">As etiquetas non poden ser duplicadas.</p>
+  </div>
   <!-- Campo Agochado -->
   <div *ngIf="formulario.get('agochado')">
     <label for="agochado">Agochado</label>
@@ -44,7 +47,6 @@
   <!-- Campo Apropiado -->
   <div *ngIf="formulario.get('apropiado')">
     <label for="apropiado">Apropiado</label>
-    <div></div>
     <input type="checkbox" id="apropiado" formControlName="apropiado" [value]="true"/>
   </div>
 
@@ -54,4 +56,5 @@
     [disabled]="formulario.invalid">
     Gardar ligazón
   </button>
+  <button *ngIf="modo == 'edicion'" (click)="cambiarVisibilidade()">Cancelar</button>
 </form>

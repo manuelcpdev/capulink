@@ -13,8 +13,10 @@
         <h2>Os teus grupos</h2>
       </div>
       <div class="contenedor-ligazons">
-        <div *ngFor="let grupo of gruposUsuario; index as i" class="">
-          <h2>{{grupo.titulo}}</h2>
+        <div *ngFor="let grupo of gruposUsuario; index as i" class="contenedor-ligazons-fillo">
+          <div class="contenedor-ligazons-fillo-header">
+            <h2 class="titulo-ligazon">{{grupo.titulo}}</h2>
+          </div>
           <p>{{grupo.descricion}}</p>
         </div>
       </div>

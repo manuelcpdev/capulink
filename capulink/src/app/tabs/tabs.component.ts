@@ -1,6 +1,5 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AutenticacionService } from '../autenticacion.service';
 
 @Component({
   selector: 'app-tabs',
@@ -10,24 +9,12 @@ import { AutenticacionService } from '../autenticacion.service';
   standalone: true,
 })
 export class TabsComponent {
-  @Input() opcions: string[] = [];  // Opcións dos tabs
-  @Input() opcionSeleccionada: string = '';  // Opción seleccionada
-  @Output() opcionChanged = new EventEmitter<string>();  // Evento para notificar a opción seleccionada
-  usuarioConectado: boolean = false;
-  eAdmin: boolean = false;
-
-  constructor(private autenticacionService: AutenticacionService) {
-    this.autenticacionService.usuarioConectado$.subscribe((estado) => {
-      this.usuarioConectado = estado;
-    });
-
-    this.autenticacionService.eAdmin$.subscribe((estado) => {
-      this.eAdmin = estado;
-    });
-  }
+  @Input() opcions: string[] = []; // Opcións dos tabs (así, pode recibir un enum ou un array de strings)
+  @Input() opcionSeleccionada: string = ''; // Opción seleccionada
+  @Output() opcionChanged = new EventEmitter<string>(); // Evento para notificar cambios
 
   cambiarOpcion(opcion: string) {
     this.opcionSeleccionada = opcion;
-    this.opcionChanged.emit(opcion);  // Emitir a opción seleccionada
+    this.opcionChanged.emit(opcion); // Emitir a opción seleccionada
   }
 }

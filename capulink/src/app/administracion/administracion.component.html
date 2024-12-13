@@ -1,1 +1,29 @@
-<p>administracion works!</p>
+<div class="host-centrado">
+  <h1 id="titulo">Panel de administrador</h1>
+
+  <!-- Usar o componente Tabs -->
+  <app-tabs [opcions]="opcionsMenu"
+            [opcionSeleccionada]="opcionActual"
+            (opcionChanged)="cambiarOpcion($event)">
+  </app-tabs>
+
+  <!-- Contido das tabs -->
+  <div *ngIf="opcionActual === menuOpcions.Inicio">
+    <p>Nesta páxina poderás engadir, actualizar ou eliminar información da base de datos</p>
+  </div>
+  <div *ngIf="opcionActual === menuOpcions.Usuario">
+    <table>
+      <!-- Contido para Usuarios -->
+    </table>
+  </div>
+  <div *ngIf="opcionActual === menuOpcions.Categoria">
+    <table>
+      <!-- Contido para Categorías -->
+    </table>
+  </div>
+  <div *ngIf="opcionActual === menuOpcions.Grupos">
+    <table>
+      <!-- Contido para Grupos -->
+    </table>
+  </div>
+</div>

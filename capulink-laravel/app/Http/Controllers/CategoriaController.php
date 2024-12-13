@@ -26,7 +26,7 @@ class CategoriaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function crearCategoria(Request $request)
     {
         $categoria = new Categoria();
         $categoria->titulo = $request->input('tituloCategoria'); // Asignación manual

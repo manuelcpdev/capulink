@@ -1,8 +1,10 @@
-<div class="tabs">
-  <ul>
+<div class="pestanas">
+  <ul class="pestanas__lista">
     <li *ngFor="let opcion of opcions"
         (click)="cambiarOpcion(opcion)"
-        [class.activo]="opcion === opcionSeleccionada">
+        [class.pestanas__elemento--activo]="opcion === opcionSeleccionada"
+        class="pestanas__elemento"
+        >
       {{ opcion }}
     </li>
   </ul>

@@ -1,9 +1,12 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup, NgForm, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticacionService } from '../autenticacion.service';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service';
 import { LigazonsService } from '../ligazons/ligazons.service';
+import { duplicadosValidator } from '../shared/validacions/duplicadosValidator';
+import { FormValues } from '../shared/interfaces/form-values';
+import { Etiqueta } from '../shared/interfaces/etiqueta';
 
 @Component({
   selector: 'app-form-ligazon',
@@ -12,39 +15,103 @@ import { LigazonsService } from '../ligazons/ligazons.service';
   standalone: true,
   imports: [NgIf, ReactiveFormsModule, NgFor, NgClass],
 })
-export class FormLigazonComponent implements OnChanges {
-  gardarLigazon(formulario: FormGroup) {
-    if(this.opcion=='cookies') {
-      this.xestorCookies.engadirLigazon(formulario.value);
-    }
-    if(this.opcion=='usuario') {
-      console.log(formulario.value['etiquetas'])
-      console.log('A opción é usuario')
-      this.ligazonsService.crearLigazon(formulario, 'usuario').subscribe({
-        next: (value) => {
-            console.log(value)
-        },
-        error: (err) => {
-            console.log(err)
-        },
-      });
-    }
-  }
+
+export class FormLigazonComponent implements OnInit {
+  /**
+   * Opción seleccionada. Pásase o valor dende o pai, para poder ensinar un formulario ou outro (cookies, usuario, grupo)
+   * @enum 'cookies'|'usuario'|'grupo'
+   */
   @Input() opcion: string = ''; // Recibe a opción seleccionada
+
+  /**
+   * Modo do formulario. Se non se especifica, estará en modo creación.
+   * @enum 'creacion' | 'edicion'
+   */
+  @Input() modo: string = 'creacion';
+  @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '' }; // Usa o tipo FormValues
+  @Input() visibilidade: boolean = false;
+  @Output() visibilidadeCambiada = new EventEmitter<boolean>();
+
+  /**
+   * Formulario
+   */
   formulario: FormGroup;
+
+  /**
+   * Comproba se o usuario está conectado ou non para amosar, condicionalmente, os formularios
+   */
   usuarioConectado: boolean = false;
+
+  /**
+   * Comproba se é admin
+   */
   eAdmin: boolean = false;
 
+  /**
+   * Formulario a enviar
+   */
+  controlsForm;
+
+  /**
+   * Cambia a visibilidade do formulario. Serve para o botón "cancelar" cando é aberto nun compoñente pai
+   */
+  cambiarVisibilidade() {
+    this.visibilidade = !this.visibilidade;
+    this.visibilidadeCambiada.emit(this.visibilidade);
+  }
+
+  /**
+   * Validacións por defecto do formulario
+   */
   validacions = {
     'titulo': [Validators.required],
     'url': [Validators.required, Validators.pattern(/^[A-Za-z][A-Za-z\d.+-]*:\/*(?:\w+(?::\w+)?@)?[^\s/]+(?::\d+)?(?:\/[\w#!:.?+=&%@\-/]*)?$/)],
     'categoria': [Validators.required],
     'agochado': [Validators.required],
     'apropiado': [Validators.required],
-    'etiquetas': [],
+    'etiquetas': [duplicadosValidator()],
     'descricion': [],
     'grupo': [Validators.required],
   }
+
+  /**
+   * Controis comúns para os formularios deste compoñente
+   */
+  controlsComuns = {
+    titulo: new FormControl<string>('', this.validacions.titulo),
+    url: new FormControl<string>('', this.validacions.url),
+    descricion: new FormControl<string>('', this.validacions.descricion),
+  }
+
+  /**
+   * Controis para o formulario de cookies
+   */
+  controlsCookies = {
+    ...this.controlsComuns,
+  }
+
+  /**
+   * Controis para o formulario de usuario
+   */
+  controlsUsuario = {
+    ...this.controlsComuns,
+    etiquetas: new FormControl<string>('', this.validacions.etiquetas),
+    agochado: new FormControl<boolean>(true, this.validacions.agochado),
+    apropiado: new FormControl<boolean>(true, this.validacions.apropiado),
+  }
+
+  /**
+   * Controis para o formulario de grupo
+   */
+  controlsGrupo = {
+    ...this.controlsComuns,
+    etiquetas: new FormControl<string>('', this.validacions.etiquetas),
+    agochado: new FormControl<boolean>(true, this.validacions.agochado),
+    apropiado: new FormControl<boolean>(true, this.validacions.apropiado),
+    grupo: new FormControl<number>(-1, this.validacions.grupo),
+  }
+
+
 
   get titulo() {
     return this.formulario.controls['titulo'];
@@ -66,7 +133,7 @@ export class FormLigazonComponent implements OnChanges {
     return this.formulario.controls['apropiado'];
   }
 
-  get etiquetas() {
+  get etiquetas(): AbstractControl<string[]> {
     return this.formulario.controls['etiquetas'];
   }
 
@@ -78,22 +145,55 @@ export class FormLigazonComponent implements OnChanges {
     return this.formulario.controls['grupo'];
   }
 
+  /**
+   * Comproba se o valor dun control foi modificado polo usuario ou se foi deixado en branco tendo erros
+   * @param controlName
+   * @param error
+   * @returns
+   */
   tenErro(controlName: string, error: string): boolean {
     const control = this.formulario.get(controlName);
     return !!(control?.errors?.[error] && (control.touched || control.dirty));
   }
 
+  /**
+   * Obtén os erros do servidor
+   */
   errosServidor: any;
 
-  constructor(private autenticacionService: AutenticacionService, private xestorCookies: XestorCookiesUsuarioService, private ligazonsService: LigazonsService) {
-    this.formulario = new FormGroup({
-      titulo: new FormControl('', this.validacions.titulo),
-      url: new FormControl('', this.validacions.url),
-      descricion: new FormControl('', this.validacions.descricion),
-      etiquetas: new FormControl('', this.validacions.etiquetas),
-      agochado: new FormControl(true, this.validacions.agochado),
-      apropiado: new FormControl(true, this.validacions.apropiado),
-    });
+  constructor(
+    private autenticacionService: AutenticacionService,
+    private xestorCookies: XestorCookiesUsuarioService,
+    private ligazonsService: LigazonsService
+  ) {
+    switch (this.opcion) {
+      case 'cookies':
+        this.controlsForm = this.controlsCookies;
+        break;
+      case 'usuario':
+        this.controlsForm = this.controlsUsuario;
+        break;
+      case 'grupo':
+        this.controlsForm = this.controlsGrupo;
+        break;
+      default:
+        this.controlsForm = this.controlsCookies;
+        break;
+    }
+
+    if (this.modo === 'edicion') {
+      this.controlsUsuario.titulo.setValue(this.valoresForm.titulo);
+      this.controlsUsuario.etiquetas.setValue(this.separarArrayConComas(this.valoresForm.etiquetas)); // Converte as etiquetas
+
+      this.controlsForm.url.setValue(this.valoresForm.url);
+      this.controlsForm.url.disable();
+
+      this.controlsForm.descricion.setValue(this.valoresForm.descricion);
+      this.formulario = new FormGroup(this.controlsForm);
+    } else {
+      this.formulario = new FormGroup(this.controlsForm);
+    }
+
 
     this.autenticacionService.usuarioConectado$.subscribe((estado) => {
       this.usuarioConectado = estado;
@@ -102,45 +202,138 @@ export class FormLigazonComponent implements OnChanges {
     this.autenticacionService.eAdmin$.subscribe((estado) => {
       this.eAdmin = estado;
     });
+  }
 
+  ngOnInit() {
+    if (this.modo == 'edicion') {
+      this.controlsUsuario.etiquetas.setValue(this.separarArrayConComas(this.valoresForm['etiquetas']));
+      this.controlsForm.url.setValue(this.valoresForm['url']);
+      this.controlsForm.descricion.setValue(this.valoresForm['descricion']);
+      this.formulario = new FormGroup(this.controlsForm);
+    } else {
+      this.formulario = new FormGroup(this.controlsForm);
+    }
+  }
+
+  engadirControls() {
+    this.formulario.reset();
+  }
+
+  obterControlsOpcion() {
+    let controlsOpcion;
+    switch (this.opcion) {
+      case 'cookies':
+        controlsOpcion = this.controlsCookies;
+        break;
+      case 'usuario':
+        controlsOpcion = this.controlsUsuario;
+        break;
+      case 'grupo':
+        controlsOpcion = this.controlsGrupo;
+        break;
+      default:
+        controlsOpcion = this.controlsCookies;
+        break;
+    }
+    return controlsOpcion;
+  }
+
+  xerarFormGroup(): void {
+    this.formulario.reset();
+    this.controlsForm = this.obterControlsOpcion();
+    this.formulario = new FormGroup(this.controlsForm);
+  }
+
+  /**
+   * Converte as etiquetas do formulario de tipo string a array
+   */
+  convertirEtiquetas(): void {
+    const etiquetasValor = this.formulario.get('etiquetas')?.value;
+    if (typeof etiquetasValor === 'string' && etiquetasValor.trim() !== '') {
+      const etiquetasArray = etiquetasValor.split(',').map((etiqueta) => etiqueta.trim());
+      this.formulario.patchValue({ etiquetas: etiquetasArray });
+    } else {
+      this.formulario.patchValue({ etiquetas: '' });
+    }
+  }
+
+  /**
+   * Converte
+   */
+  convertirEtiquetasEdicion(): void {
+    const etiquetasValor = this.formulario.get('etiquetas')?.value;
+    if (typeof etiquetasValor === 'string' && etiquetasValor.trim() !== '') {
+      const etiquetasArray = etiquetasValor.split(',').map(titulo => ({ titulo: titulo.trim() } as Etiqueta)); // Converte en obxectos Etiqueta
+      this.formulario.patchValue({ etiquetas: etiquetasArray });
+    } else {
+      this.formulario.patchValue({ etiquetas: [] });
+    }
+  }
+
+
+  separarArrayConComas(arrayObxectivo: Etiqueta[]): string {
+    return arrayObxectivo.map(etiqueta => etiqueta.titulo).join(','); // Extrae os títulos e úneos por comas
+  }
+
+
+
+
+
+  gardarLigazon(formulario: FormGroup) {
+    if (this.opcion == 'cookies') {
+      this.xestorCookies.engadirLigazon(formulario.value);
+    }
+    if (this.opcion == 'usuario') {
+      if (this.modo == 'edicion') {
+        this.convertirEtiquetasEdicion();
+        console.log('Etiquetas do formulario:');
+        console.table(this.valoresForm.etiquetas);
+
+        this.formulario.addControl('ligazon_id', new FormControl(this.valoresForm.ligazon_id));
+        this.formulario.patchValue({'ligazon_id': this.valoresForm.ligazon_id});
+
+        this.ligazonsService.actualizarLigazonUsuario(formulario, 'usuario', this.valoresForm.ligazon_id).subscribe({
+          next: (value) => {
+            alert('A ligazón foi actualizada con éxito!');
+          },
+          error: (err) => {
+            this.errosServidor = err;
+            console.table(this.errosServidor)
+            alert(this.errosServidor)
+          },
+        });
+      } else {
+        this.convertirEtiquetas();
+        console.log(formulario.value['etiquetas']);
+        console.log('A opción é usuario');
+
+        this.ligazonsService.crearLigazon(formulario, 'usuario').subscribe({
+          next: (value) => {
+            console.log(value);
+            alert('A ligazón foi gardada con éxito!');
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+
+      }
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['opcion']) {
-      this.actualizarFormulario();
+      this.xerarFormGroup();
+    }
+    if (changes['valoresForm'] || this.visibilidade) {
+      this.controlsUsuario.titulo.setValue(this.valoresForm['titulo']);
+      this.controlsUsuario.etiquetas.setValue(this.separarArrayConComas(this.valoresForm['etiquetas']));
+      this.controlsForm.url.setValue(this.valoresForm.url);
+      this.controlsForm.url.disable();
+      this.controlsForm.descricion.setValue(this.valoresForm.descricion);
+      this.formulario = new FormGroup(this.controlsForm);
+    } else {
+      this.formulario = new FormGroup(this.controlsForm);
     }
   }
-
-  actualizarFormulario(): void {
-    // Restablece os campos e adapta o formulario á opción seleccionada
-    this.formulario.reset();
-    // Borrar campos que non pertencen á opción seleccionada
-    if (this.opcion === 'cookies') {
-      this.formulario.removeControl('etiquetas');
-      this.formulario.removeControl('agochado');
-      this.formulario.removeControl('apropiado');
-    } else if (this.opcion === 'usuario') {
-      //this.formulario.removeControl('descricion');
-      this.formulario.addControl('etiquetas', new FormControl(this.validacions.etiquetas));
-      this.formulario.addControl('agochado', new FormControl(true, this.validacions.agochado));
-      this.formulario.addControl('apropiado', new FormControl(true, this.validacions.agochado));
-    } else if (this.opcion === 'grupo') {
-      this.formulario.addControl('agochado', new FormControl(this.validacions.agochado));
-      this.formulario.addControl('apropiado', new FormControl(true, this.validacions.apropiado));
-      this.formulario.addControl('descricion', new FormControl(true, this.validacions.descricion));
-      this.formulario.addControl('etiquetas', new FormControl(this.validacions.etiquetas));
-    }
-  }
-
-  convertirEtiquetas(): void {
-    const etiquetasValor = this.formulario.get('etiquetas')?.value;
-    const etiquetasArray: string[] = etiquetasValor
-      ? etiquetasValor.split(',').map((etiqueta: string) => etiqueta.trim())
-      : [];
-    this.formulario.patchValue({
-      etiquetas: etiquetasArray
-    });
-  }
-
-
 }

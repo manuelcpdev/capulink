@@ -12,8 +12,12 @@ export class PerfilService {
 
   obterPerfil (name: string | null) {
     if(name == null) {
-      return this.http.get<{ name: string, visibilidade: string, foto: string, error: string}>(`${this.autenticacionService.api}/perfil`, this.autenticacionService.opcionsComuns());
+      return this.http.get<{
+        ligazons: any; name: string, visibilidade: string, foto: string, error: string
+}>(`${this.autenticacionService.api}/perfil`, this.autenticacionService.opcionsComuns());
     }
-      return this.http.get<{ name: string, visibilidade: string, foto: string, error: string }>(`${this.autenticacionService.api}/perfil/${name}`, this.autenticacionService.opcionsComuns());
+      return this.http.get<{
+        ligazons: any; name: string, visibilidade: string, foto: string, error: string
+}>(`${this.autenticacionService.api}/perfil/${name}`, this.autenticacionService.opcionsComuns());
   }
 }

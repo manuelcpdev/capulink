@@ -5,8 +5,11 @@
   <div *ngIf="error">
     Non tes permiso para ver este perfil de usuario
   </div>
-  <div *ngIf="name">
-    Usuario {{name}}
-    <img [src]="foto">
+  <div class="bio">
+    <div *ngIf="name" class="bio-datos">
+      <p class="nome">{{name}}</p>
+      <img [src]="foto" class="foto">
+    </div>
   </div>
+
 </div>

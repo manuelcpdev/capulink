@@ -6,7 +6,7 @@ use App\Models\Perfil;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Traits\UserTrait;
 
 class PerfilController extends Controller
 {
@@ -42,10 +42,12 @@ class PerfilController extends Controller
         $user = User::where('name', Auth::user()->name)->first();
 
         if($user) {
+            $ligazons = $user->ligazons;
             return response()->json([
                 'name' => $user->name,
                 'foto' => $user->perfil->foto,
                 'visibilidade' => $user->perfil->visibilidade,
+                'ligazons' => $ligazons,
             ], 200);
         }
 
@@ -56,7 +58,7 @@ class PerfilController extends Controller
      }
 
     /**
-     * Display the specified resource.
+     * Amosar o perfil de usuario según o nome
      */
     public function show($name)
     {
@@ -67,10 +69,12 @@ class PerfilController extends Controller
         }
 
         if (Auth::user()->admin || $usuario->perfil->visibilidade == 'publico' || Auth::user()->name == $usuario->name) {
+            $ligazons = $usuario->ligazons->where('agochado', false);
             return response()->json([
                 'mensaxe' => 'Acceso permitido',
                 'name' => $usuario->name,
                 'foto' => $usuario->perfil->foto,
+                'ligazons' => $ligazons,
             ], 200);
         } else {
             return response()->json([

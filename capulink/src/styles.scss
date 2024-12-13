@@ -38,6 +38,7 @@ input, button, textarea, select {
 
 /* Separa unha palabra se non hai espacio suficiente na mesma liña */
 p, h1, h2, h3, h4, h5, h6 {
+  color: var(--cor-texto-principal);
   overflow-wrap: break-word;
 }
 
@@ -143,6 +144,9 @@ form {
 button {
   border: 1px solid;
   border-radius: 5px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .boton-xeral-form {
@@ -180,4 +184,14 @@ button {
   #contenedor-cartas {
     justify-content: center;
   }
+}
+
+.popup {
+  position: absolute;
+
+  background-color: #fff;
+  border: 1px solid;
+  border-radius: 10px;
+
+  padding: 50px;
 }

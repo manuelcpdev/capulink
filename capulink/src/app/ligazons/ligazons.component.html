@@ -15,15 +15,13 @@
             <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
             <div class="contenedor-ligazons-fillo-header-opcions">
               <button class="editar-ligazon"><i class="fas fa-edit"></i></button>
-              <button class="eliminar-ligazon" (click)="this.xestorCookies.eliminarLigazon(i)"><i class="fa-solid fa-delete-left"></i></button>
+              <button class="eliminar-ligazon" (click)="this.xestorCookies.eliminarLigazon(i)"><i
+                  class="fa-solid fa-delete-left"></i></button>
             </div>
           </div>
           <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
           <p (click)="toggleDescriptionCookies(i)" class="toggle-descricion">
-            <i
-              class="fa-solid fa-caret-right"
-              [class.fa-rotate-90]="descricionVisiblesCookies[i]"
-            ></i>
+            <i class="fa-solid fa-caret-right" [class.fa-rotate-90]="descricionVisiblesCookies[i]"></i>
             Descrición
           </p>
           <p *ngIf="descricionVisiblesCookies[i]" class="description">
@@ -43,16 +41,14 @@
           <div class="contenedor-ligazons-fillo-header">
             <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
             <div class="contenedor-ligazons-fillo-header-opcions">
-              <button class="editar-ligazon"><i class="fas fa-edit"></i></button>
-              <button class="eliminar-ligazon" (click)="this.eliminarLigazonUsuario(ligazon.ligazon_id)"><i class="fa-solid fa-delete-left"></i></button>
+              <app-boton-editar [id]="ligazon.ligazon_id" (editar)="amosarFormularioLigazonEditar($event)"></app-boton-editar>
+              <app-boton-eliminar [id]="ligazon.ligazon_id" [texto]="'Eliminar'" (eliminar)="eliminarLigazonUsuario($event)">
+              </app-boton-eliminar>
             </div>
           </div>
           <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
           <p (click)="toggleDescricionUsuario(i)" class="toggle-descricion">
-            <i
-              class="fa-solid fa-caret-right"
-              [class.fa-rotate-90]="descricionVisiblesUsuario[i]"
-            ></i>
+            <i class="fa-solid fa-caret-right" [class.fa-rotate-90]="descricionVisiblesUsuario[i]"></i>
             Descrición
           </p>
           <p *ngIf="descricionVisiblesUsuario[i]" class="description">
@@ -62,4 +58,7 @@
       </div>
     </div>
   </div>
+  <ng-container *ngIf="edicionActiva">
+    <app-form-ligazon [class]="edicionActiva ? 'popup' : ''" [modo]="'edicion'" [opcion]="'usuario'" [valoresForm]="valoresLigazonEdicion" [visibilidade]="edicionActiva" (visibilidadeCambiada)="actualizarVisibilidade($event)"></app-form-ligazon>
+  </ng-container>
 </div>
