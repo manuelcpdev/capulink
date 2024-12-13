@@ -112,6 +112,12 @@ Route::get('/grupos/usuario', [GrupoController::class, 'obterGruposUsuario']); /
 Route::get('/grupos/publicos', [GrupoController::class, 'obterGruposPublicos']);
 Route::get('/grupo/{id}', [GrupoController::class, 'obterGrupo']);
 
-// Ligazons de grupo
-// Etiquetas de grupo
-// Etiquetas de las ligazons del grupo
+Route::post('ligazons/grupo/crear', [LigazonController::class, 'crearLigazonDeGrupo']);
+Route::post('/ligazons/grupo/eliminar', [LigazonController::class, 'deleteLigazonsDeGrupo']);
+Route::post('/ligazons/grupo/modificar', [LigazonController::class, 'updateLigazonDeGrupo']);
+
+// Por probar
+Route::post('ligazons/usuario/modificar', [LigazonController::class, 'updateLigazonDeUsuario']);
+Route::post('/ligazons/usuario/eliminar', [LigazonController::class, 'deleteLigazonsDeUsuario']);
+Route::post('ligazons/grupo/get', [LigazonController::class, 'obterLigazonsPorGrupo']);
+
