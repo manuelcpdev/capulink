@@ -19,7 +19,9 @@ class comprobarRol
         $user = $request->user();
 
         if (!$user || !$user->admin) {
-            abort(403, 'Non autorizado');
+            return response()->json([
+                'eAdmin' => false,
+            ]);
         }
 
         return $next($request);

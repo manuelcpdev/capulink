@@ -474,7 +474,7 @@ public function crearLigazonDeGrupo(Request $request)
 
 
 
-    public function updateLigazonDeGrupo(Request $request)
+    public function actualizarLigazonDeGrupo(Request $request)
     {
         // Validación de entrada
         $validator = Validator::make($request->all(), [
@@ -604,7 +604,7 @@ public function crearLigazonDeGrupo(Request $request)
     }
 
 
-public function deleteLigazonsDeGrupo(Request $request)
+public function eliminarLigazonsDeGrupo(Request $request)
 {
     // Validar os datos de entrada
     $validator = Validator::make($request->all(), [
@@ -794,7 +794,7 @@ public function deleteLigazonsDeGrupo(Request $request)
         // Se o grupo é público ou o usuario é admin ou membro, devolver as ligazóns
         if ($isPublico || $isAdmin || $esMembro) {
             // Obter as ligazóns do grupo xunto coas súas etiquetas
-            $ligazons = $grupo->ligazons()->with('etiquetas')->get();
+            $ligazons = $grupo->ligazons()->with('etiquetasGrupo')->get();
 
             return response()->json([
                 'ligazons' => $ligazons

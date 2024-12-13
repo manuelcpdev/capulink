@@ -12,6 +12,7 @@ use App\Http\Controllers\PerfilController;
 use App\Models\Grupo;
 use App\Models\Ligazon;
 use App\Http\Middleware\PodeEditarLigazonUsuario;
+use App\Http\Middleware\comprobarRol;
 
 /**
  * Páxina principal de Laravel
@@ -51,8 +52,12 @@ Route::get('/test', function (Request $request) {
 Route::middleware('auth:sanctum')->group( function () {
     Route::get('/desconexion', [AutenticacionController::class, 'desconectar']);
     Route::post('/desconexion', [AutenticacionController::class, 'desconectar']);
-    Route::middleware('comprobarRol')->group( function () {
-        Route::get('/admin');
+    Route::middleware(comprobarRol::class)->group( function () {
+        Route::get('/admin', function(Request $request) {
+            return response()->json([
+                'eAdmin' => true,
+            ]);
+        });
     });
 
     /**
@@ -105,19 +110,19 @@ Route::post('/grupo/eliminar', [GrupoController::class, 'eliminarGrupo']); // ad
 Route::post('/grupo/unirse', [GrupoController::class, 'unirGrupo']);
 Route::post('/grupo/sair', [GrupoController::class, 'abandoarGrupo']);
 
-//Por probar
+//
 Route::get('/grupos/usuario/miembro', [GrupoController::class, 'obterGruposUsuarioMembresia']);
 Route::get('/grupos/usuario/creador', [GrupoController::class, 'obterGruposUsuarioCreadorConectado']);
 Route::get('/grupos/usuario', [GrupoController::class, 'obterGruposUsuario']); //todos los grupos del usuario
 Route::get('/grupos/publicos', [GrupoController::class, 'obterGruposPublicos']);
 Route::get('/grupo/{id}', [GrupoController::class, 'obterGrupo']);
 
-Route::post('ligazons/grupo/crear', [LigazonController::class, 'crearLigazonDeGrupo']);
-Route::post('/ligazons/grupo/eliminar', [LigazonController::class, 'deleteLigazonsDeGrupo']);
-Route::post('/ligazons/grupo/modificar', [LigazonController::class, 'updateLigazonDeGrupo']);
+Route::post('/ligazons/grupo/crear', [LigazonController::class, 'crearLigazonDeGrupo']);
+Route::post('/ligazons/grupo/eliminar', [LigazonController::class, 'eliminarLigazonsDeGrupo']);
+Route::post('/ligazons/grupo/modificar', [LigazonController::class, 'actualizarLigazonDeGrupo']);
 
-// Por probar
+//
 Route::post('ligazons/usuario/modificar', [LigazonController::class, 'updateLigazonDeUsuario']);
 Route::post('/ligazons/usuario/eliminar', [LigazonController::class, 'deleteLigazonsDeUsuario']);
-Route::post('ligazons/grupo/get', [LigazonController::class, 'obterLigazonsPorGrupo']);
+Route::get('/ligazons/grupo/{id}', [LigazonController::class, 'obterLigazonsPorGrupo']);
 

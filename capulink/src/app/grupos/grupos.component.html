@@ -7,20 +7,48 @@
         (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
     </div>
   </div>
+  <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
+    <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
+      <app-form-grupo [popupActivo]="formGrupoVisible" (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
+    </div>
+  </div>
   <div id="contenedor-cartas">
     <div *ngIf="gruposUsuario" class="carta">
       <div class="titulo-carta">
         <h2>Os teus grupos</h2>
       </div>
       <div class="contenedor-ligazons">
+        <div *ngIf="gruposUsuario.length == 0">Non hai grupos que amosar</div>
         <div *ngFor="let grupo of gruposUsuario; index as i" class="contenedor-ligazons-fillo">
           <div class="contenedor-ligazons-fillo-header">
-            <h2 class="titulo-ligazon">{{grupo.titulo}}</h2>
+            <h2 class="titulo-ligazon" (click)="mostrarLigazons(grupo.id)">{{grupo.titulo}}</h2>
           </div>
           <p>{{grupo.descricion}}</p>
         </div>
       </div>
 
     </div>
+  </div>
+
+  <div id="contenedor-cartas">
+    <div *ngIf="gruposUsuario" class="carta">
+      <div class="titulo-carta">
+        <h2>Grupos públicos</h2>
+      </div>
+      <div class="contenedor-ligazons">
+        <div *ngIf="gruposPublicos.length == 0">Non hai grupos que amosar</div>
+        <div *ngFor="let grupo of gruposPublicos; index as i" class="contenedor-ligazons-fillo">
+          <div class="contenedor-ligazons-fillo-header">
+            <h2 class="titulo-ligazon" (click)="mostrarLigazons(grupo.id)">{{grupo.titulo}}</h2>
+          </div>
+          <p>{{grupo.descricion}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="visibilidadLigazonsGrupo && grupoSeleccionadoId" class="popup">
+    <app-grupo-ligazons [grupoId]="grupoSeleccionadoId" (visibilidadeCambiada)="actualizarEstadoVisibilidade($event)"></app-grupo-ligazons>
   </div>
 </div>

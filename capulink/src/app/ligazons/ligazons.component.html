@@ -2,7 +2,10 @@
   <div>
     <h1 id="titulo">Ligazóns</h1>
   </div>
-
+<div *ngIf="ligazonsUsuario.length == 0 && ligazonsCookies.length == 0">
+  <p>Todavía non tes ligazóns gardadas</p>
+  <p>Engade ligazóns na páxina principal para velas aquí</p>
+</div>
   <div id="contenedor-cartas">
     <!-- Tarxeta para ligazóns gardadas en cookies -->
     <div class="carta" *ngIf="ligazonsCookies.length > 0">
@@ -14,7 +17,7 @@
           <div class="contenedor-ligazons-fillo-header">
             <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
             <div class="contenedor-ligazons-fillo-header-opcions">
-              <button class="editar-ligazon"><i class="fas fa-edit"></i></button>
+              <!--<button class="editar-ligazon"><i class="fas fa-edit"></i></button>-->
               <button class="eliminar-ligazon" (click)="this.xestorCookies.eliminarLigazon(i)"><i
                   class="fa-solid fa-delete-left"></i></button>
             </div>

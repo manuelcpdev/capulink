@@ -129,6 +129,18 @@ export class AutenticacionService {
     );
   }
 
+  /**
+   * Comproba se o usuario é admin
+   * @returns Observable<boolean>
+   */
+  comprobarEAdmin(): Observable<boolean> {
+    return this.http.get<{ eAdmin: boolean }>(`${this.api}/admin`, this.opcionsComuns()).pipe(
+      map(response => response.eAdmin),
+      catchError(() => of(false)) // Se hai un erro, asúmese que o usuario non é admin
+    );
+  }
+
+
   comprobarEstado(): void {
     this.http.get<{ conectado: boolean; eAdmin: boolean }>(`${this.api}/usuario-estado`, this.opcionsComuns()).subscribe({
       next: (response) => {

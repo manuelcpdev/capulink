@@ -2,17 +2,51 @@ import { Component, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
 import { GruposService } from './grupos.service';
 import { FormGrupoComponent } from '../form-grupo/form-grupo.component';
 import { NgClass, NgFor, NgIf } from '@angular/common';
+import { GrupoLigazonsComponent } from '../grupo-ligazons/grupo-ligazons.component';
 
 @Component({
   selector: 'app-grupos',
   standalone: true,
-  imports: [FormGrupoComponent, NgIf, NgClass, NgFor],
+  imports: [FormGrupoComponent, NgIf, NgClass, NgFor, GrupoLigazonsComponent],
   templateUrl: './grupos.component.html',
   styleUrl: './grupos.component.scss'
 })
 export class GruposComponent implements OnInit {
+  grupoSeleccionadoId: number | null = null;
+
+  visibilidadLigazonsGrupo = false;
+
+  gruposPublicos: any[] = [];
+
+  actualizarEstadoVisibilidade(visible: boolean): void {
+    if (!visible) {
+      this.grupoSeleccionadoId = null; // Ocultar o listado
+      this.visibilidadLigazonsGrupo = false;
+    }
+  }
+
+
+  mostrarLigazons(grupoId: number): void {
+    this.grupoSeleccionadoId = grupoId;
+    this.visibilidadLigazonsGrupo = true; // Mostrar el componente de ligazóns
+  }
+
+  obterGruposPublicos() {
+    this.gruposService.obterGruposPublicos().subscribe({
+      next: (value) => {
+        this.gruposPublicos = value.grupos;
+      },
+      error: (err) => {
+        console.table(err)
+      },
+    })
+  }
+
+  visibilidadeLigazonsGrupo: boolean = false;
   crearGrupo() {
     throw new Error('Method not implemented.');
+  }
+  verLigazonsGrupo() {
   }
   gruposUsuario: any[] = [];
   formGrupoVisible: boolean = false;
@@ -22,6 +56,7 @@ export class GruposComponent implements OnInit {
   ngOnInit(): void {
     //Inicializar grupos
     this.obterGruposUsuario();
+    this.obterGruposPublicos();
   }
 
   ngOnChanges(changes: SimpleChanges) {

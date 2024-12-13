@@ -96,3 +96,9 @@
 .toggle-descricion:hover {
   cursor: pointer;
 }
+
+.titulo-ligazon {
+  &:hover {
+    cursor: pointer;
+  }
+}

@@ -7,4 +7,5 @@ export interface FormValues {
   etiquetas: Etiqueta[],
   url: string;
   descricion: string;
+  grupo?: number;
 }

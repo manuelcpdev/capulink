@@ -65,7 +65,7 @@ export class LigazonsService {
         break;
 
       case 'grupo': {
-        urlChamada += '/grupos/ligazons';
+        urlChamada += '/ligazons/grupo/crear';
       }
         break;
 

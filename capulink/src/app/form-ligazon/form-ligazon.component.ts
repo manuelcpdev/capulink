@@ -7,6 +7,7 @@ import { LigazonsService } from '../ligazons/ligazons.service';
 import { duplicadosValidator } from '../shared/validacions/duplicadosValidator';
 import { FormValues } from '../shared/interfaces/form-values';
 import { Etiqueta } from '../shared/interfaces/etiqueta';
+import { GruposService } from '../grupos/grupos.service';
 
 @Component({
   selector: 'app-form-ligazon',
@@ -28,9 +29,10 @@ export class FormLigazonComponent implements OnInit {
    * @enum 'creacion' | 'edicion'
    */
   @Input() modo: string = 'creacion';
-  @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '' }; // Usa o tipo FormValues
+  @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '', grupo: 0 }; // Usa o tipo FormValues
   @Input() visibilidade: boolean = false;
   @Output() visibilidadeCambiada = new EventEmitter<boolean>();
+  gruposUsuario: any[] = [];
 
   /**
    * Formulario
@@ -164,7 +166,8 @@ export class FormLigazonComponent implements OnInit {
   constructor(
     private autenticacionService: AutenticacionService,
     private xestorCookies: XestorCookiesUsuarioService,
-    private ligazonsService: LigazonsService
+    private ligazonsService: LigazonsService,
+    private gruposService: GruposService,
   ) {
     switch (this.opcion) {
       case 'cookies':
@@ -194,6 +197,11 @@ export class FormLigazonComponent implements OnInit {
       this.formulario = new FormGroup(this.controlsForm);
     }
 
+    if (this.modo === 'creacion' && this.opcion == 'grupo') {
+      this.obterGruposUsuarioCreadorConectado();
+      //console.log(this.opcion)
+    }
+
 
     this.autenticacionService.usuarioConectado$.subscribe((estado) => {
       this.usuarioConectado = estado;
@@ -202,6 +210,19 @@ export class FormLigazonComponent implements OnInit {
     this.autenticacionService.eAdmin$.subscribe((estado) => {
       this.eAdmin = estado;
     });
+  }
+
+  obterGruposUsuarioCreadorConectado() {
+    if (this.gruposUsuario.length > 0) return;
+    this.gruposService.obterGruposUsuarioCreadorConectado().subscribe({
+      next: (value) => {
+        console.table(value)
+        this.gruposUsuario = value.grupos || [];
+      },
+      error: (err) => {
+        console.error(err)
+      },
+    })
   }
 
   ngOnInit() {
@@ -290,7 +311,7 @@ export class FormLigazonComponent implements OnInit {
         console.table(this.valoresForm.etiquetas);
 
         this.formulario.addControl('ligazon_id', new FormControl(this.valoresForm.ligazon_id));
-        this.formulario.patchValue({'ligazon_id': this.valoresForm.ligazon_id});
+        this.formulario.patchValue({ 'ligazon_id': this.valoresForm.ligazon_id });
 
         this.ligazonsService.actualizarLigazonUsuario(formulario, 'usuario', this.valoresForm.ligazon_id).subscribe({
           next: (value) => {
@@ -318,12 +339,30 @@ export class FormLigazonComponent implements OnInit {
         });
 
       }
+    } else if (this.opcion == "grupo") {
+      this.convertirEtiquetas();
+
+      this.formulario.addControl('grupo_id', new FormControl(this.formulario.controls['grupo'].value));
+      this.formulario.patchValue({ 'grupo_id': this.formulario.controls['grupo'].value });
+
+      this.ligazonsService.crearLigazon(formulario, 'grupo').subscribe({
+        next: (value) => {
+          console.log(value);
+          alert('A ligazón foi gardada con éxito!');
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
+
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['opcion']) {
       this.xerarFormGroup();
+      this.opcion = changes['opcion'].currentValue
+      this.obterGruposUsuarioCreadorConectado()
     }
     if (changes['valoresForm'] || this.visibilidade) {
       this.controlsUsuario.titulo.setValue(this.valoresForm['titulo']);

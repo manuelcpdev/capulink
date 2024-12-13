@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+
 class GrupoController extends Controller
 {
     /**
@@ -31,75 +32,75 @@ class GrupoController extends Controller
      * Store a newly created resource in storage.
      */
     public function crearGrupo(Request $request)
-{
-    // Validación de entrada
-    $validator = Validator::make($request->all(), [
-        'titulo' => 'required|string|max:255',
-        'descricion' => 'nullable|string|max:1000',
-        'apropiado' => 'required|boolean',
-        'etiquetas' => 'nullable|array',
-        'etiquetas.*' => 'string|max:50', // Cada etiqueta debe ser una cadena de texto
-    ], [
-        'titulo.required' => 'O título do grupo é obrigatorio.',
-        'apropiado.required' => 'Debe especificar se o grupo é apropiado.',
-        'etiquetas.*.max' => 'Cada etiqueta pode ter un máximo de 50 caracteres.',
-    ]);
+    {
+        // Validación de entrada
+        $validator = Validator::make($request->all(), [
+            'titulo' => 'required|string|max:255',
+            'descricion' => 'nullable|string|max:1000',
+            'apropiado' => 'required|boolean',
+            'etiquetas' => 'nullable|array',
+            'etiquetas.*' => 'string|max:50', // Cada etiqueta debe ser una cadena de texto
+        ], [
+            'titulo.required' => 'O título do grupo é obrigatorio.',
+            'apropiado.required' => 'Debe especificar se o grupo é apropiado.',
+            'etiquetas.*.max' => 'Cada etiqueta pode ter un máximo de 50 caracteres.',
+        ]);
 
-    // Devolver errores de validación si existen
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Erro de validación',
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    $validatedData = $validator->validated();
-
-    try {
-        DB::beginTransaction(); // Inicia a transacción
-
-        // Crear o grupo
-        $grupo = new Grupo();
-        $grupo->titulo = $validatedData['titulo'];
-        $grupo->descricion = $validatedData['descricion'] ?? null;
-        $grupo->apropiado = $validatedData['apropiado'];
-        $grupo->user_id = Auth::id(); // Usuario autenticado como creador
-        $grupo->save();
-
-        // Procesar etiquetas y asociarlas al grupo
-        $etiquetasInput = $validatedData['etiquetas'] ?? [];
-        foreach ($etiquetasInput as $etiquetaTitulo) {
-            // Buscar ou crear a etiqueta
-            $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
-            if(!$etiqueta) {
-                //echo $etiquetaTitulo;
-                $etiqueta = new Etiqueta;
-                $etiqueta->titulo = $etiquetaTitulo;
-                $etiqueta->save();
-            }
-
-            // Asociar a etiqueta co grupo
-            $grupo->etiquetas()->attach($etiqueta->id, [
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        // Devolver errores de validación si existen
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Erro de validación',
+                'errors' => $validator->errors(),
+            ], 422);
         }
 
-        DB::commit(); // Confirmar a transacción
+        $validatedData = $validator->validated();
 
-        return response()->json([
-            'message' => 'Grupo creado exitosamente',
-            'grupo' => $grupo,
-            'etiquetas' => $etiquetasInput,
-        ]);
-    } catch (\Exception $e) {
-        DB::rollBack(); // Reverter cambios se ocorre un erro
-        return response()->json([
-            'message' => 'Erro ao crear o grupo',
-            'error' => $e->getMessage(),
-        ], 500);
+        try {
+            DB::beginTransaction(); // Inicia a transacción
+
+            // Crear o grupo
+            $grupo = new Grupo();
+            $grupo->titulo = $validatedData['titulo'];
+            $grupo->descricion = $validatedData['descricion'] ?? null;
+            $grupo->apropiado = $validatedData['apropiado'];
+            $grupo->user_id = Auth::id(); // Usuario autenticado como creador
+            $grupo->save();
+
+            // Procesar etiquetas y asociarlas al grupo
+            $etiquetasInput = $validatedData['etiquetas'] ?? [];
+            foreach ($etiquetasInput as $etiquetaTitulo) {
+                // Buscar ou crear a etiqueta
+                $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
+                if (!$etiqueta) {
+                    //echo $etiquetaTitulo;
+                    $etiqueta = new Etiqueta;
+                    $etiqueta->titulo = $etiquetaTitulo;
+                    $etiqueta->save();
+                }
+
+                // Asociar a etiqueta co grupo
+                $grupo->etiquetas()->attach($etiqueta->id, [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit(); // Confirmar a transacción
+
+            return response()->json([
+                'message' => 'Grupo creado exitosamente',
+                'grupo' => $grupo,
+                'etiquetas' => $etiquetasInput,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Reverter cambios se ocorre un erro
+            return response()->json([
+                'message' => 'Erro ao crear o grupo',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
 
     /**
@@ -134,7 +135,8 @@ class GrupoController extends Controller
         //
     }
 
-    public function unirGrupo(Request $request) {
+    public function unirGrupo(Request $request)
+    {
 
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
@@ -181,7 +183,8 @@ class GrupoController extends Controller
         }
     }
 
-    public function abandoarGrupo(Request $request) {
+    public function abandoarGrupo(Request $request)
+    {
 
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
@@ -285,7 +288,8 @@ class GrupoController extends Controller
         }
     }
 
-    public function actualizarGrupo(Request $request){
+    public function actualizarGrupo(Request $request)
+    {
         // Validar os datos de entrada
         $validator = Validator::make($request->all(), [
             'grupo_id' => 'required|integer|exists:grupos,id',
@@ -351,7 +355,7 @@ class GrupoController extends Controller
             if (isset($validatedData['etiquetas_agregar'])) {
                 foreach ($validatedData['etiquetas_agregar'] as $etiquetaTitulo) {
                     $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
-                    if(!$etiqueta) {
+                    if (!$etiqueta) {
                         $etiqueta = new Etiqueta;
                         $etiqueta->titulo = $etiquetaTitulo;
                         $etiqueta->save();
@@ -413,11 +417,16 @@ class GrupoController extends Controller
             })->with('etiquetas')->get();
 
             // Unir todos os grupos sen duplicados
+            /*
             $todosGrupos = $gruposPublicos
                 ->merge($gruposCreados)
                 ->merge($gruposParticipados)
                 ->unique('id'); // Evitar duplicados
-
+*/
+            $todosGrupos =
+                $gruposCreados
+                ->merge($gruposParticipados)
+                ->unique('id'); // Evitar duplicados
             return response()->json([
                 'message' => 'Grupos do usuario recuperados correctamente.',
                 'grupos' => $todosGrupos,
@@ -488,7 +497,8 @@ class GrupoController extends Controller
         }
     }
 
-    public function obterGrupo($id){
+    public function obterGrupo($id)
+    {
         try {
             // Buscar o grupo polo seu ID
             $grupo = Grupo::findOrFail($id);
@@ -527,6 +537,4 @@ class GrupoController extends Controller
             ], 500);
         }
     }
-
-
 }

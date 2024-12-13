@@ -7,13 +7,14 @@ import { autenticacionGuard } from './autenticacion.guard';
 import { AdministracionComponent } from './administracion/administracion.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { GruposComponent } from './grupos/grupos.component';
+import { adminGuard } from './admin.guard';
 
 export const routes: Routes = [
   {path: '', component: InicioComponent},
   {path: 'ligazons', component: LigazonsComponent},
   {path: 'rexistro', component: RexistroComponent, canActivate: [autenticacionGuard]},
   {path: 'conexion', component: ConexionComponent, canActivate: [autenticacionGuard]},
-  {path: 'administracion', component: AdministracionComponent},
+  {path: 'administracion', component: AdministracionComponent, canActivate: [adminGuard]},
   {path: 'perfil', component: PerfilComponent},
   {path: 'perfil/:name', component: PerfilComponent},
   {path: 'ligazons/', component: LigazonsComponent},

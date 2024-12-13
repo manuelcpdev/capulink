@@ -1,0 +1,20 @@
+<div *ngIf="mostrarLigazons && ligazons.length > 0; else noLigazons">
+  <h3>Ligazóns do grupo</h3>
+  <i class="fas fa-window-close boton-pechar" (click)="toggleLigazons()"></i>
+  <ul>
+    <li *ngFor="let ligazon of ligazons">
+      <h3 class="titulo-ligazon">{{ ligazon.titulo }} </h3>
+      <a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a>
+      <p>{{ ligazon.descricion }}</p>
+    </li>
+  </ul>
+</div>
+
+<ng-template #noLigazons>
+  <div>
+    <i class="fas fa-window-close" (click)="toggleLigazons()"></i>
+    <p>Non hai ligazóns neste grupo.</p>
+  </div>
+</ng-template>
+
+

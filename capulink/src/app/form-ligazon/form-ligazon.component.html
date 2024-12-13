@@ -49,6 +49,12 @@
     <label for="apropiado">Apropiado</label>
     <input type="checkbox" id="apropiado" formControlName="apropiado" [value]="true"/>
   </div>
+  <div *ngIf="formulario.get('grupo')">
+    <label>Grupo</label>
+    <select formControlName="grupo">
+      <option *ngFor="let grupo of gruposUsuario; let i = index" [value]='grupo.id'>{{grupo.titulo}}</option>
+    </select>
+  </div>
 
   <!-- Botón -->
   <button type="submit" class="boton-xeral-form"
