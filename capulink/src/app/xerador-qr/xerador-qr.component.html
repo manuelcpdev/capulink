@@ -1,0 +1,14 @@
+<div
+  class="flex flex-col items-center mx-auto my-4 gap-2 border-2 border-blue-100 rounded bg-teal-50 shadow-md shadow-slate-400 py-4 w-96">
+  <app-titulo titulo="Xerador QR"></app-titulo>
+  <div
+    class="flex flex-col items-center w-40 h-40 border-2 border-blue-200 rounded bg-gradient-to-r from-teal-50 to-slate-200">
+    <img *ngIf="qrcode$|async" [src]="qrcode$|async" class="h-full w-full">
+  </div>
+  <form [formGroup]="form" (ngSubmit)="this.updateQR(url.value)" class="flex flex-col gap-2 w-11/12">
+    <label for="url" class="text-blue-800">URL</label>
+    <input #url class="border-2 border-blue-400" aria-label="url" formControlName="url">
+    <input type="submit" (click)="updateQR(url.value)" value="Xerar QR"
+      class="border-2 border-blue-500 rounded bg-blue-500 text-teal-50 hover:cursor-pointer">
+  </form>
+</div>
