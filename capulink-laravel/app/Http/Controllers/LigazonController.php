@@ -789,7 +789,7 @@ public function eliminarLigazonsDeGrupo(Request $request)
         $isPublico = $grupo->visibilidade == 'publico';
 
         // Comprobar se o usuario é membro do grupo
-        $esMembro = $grupo->users()->where('user_id', $usuario->id)->exists();
+        $esMembro = !$usuario ? null : $grupo->users()->where('user_id', $usuario->id)->exists();
 
         // Se o grupo é público ou o usuario é admin ou membro, devolver as ligazóns
         if ($isPublico || $isAdmin || $esMembro) {
