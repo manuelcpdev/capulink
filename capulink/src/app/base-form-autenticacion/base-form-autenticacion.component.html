@@ -1,0 +1,70 @@
+<ng-template #errosTemplate let-control="control" let-controlName="controlName" let-controlErrors>
+  <ng-container *ngIf="campoInvalido(control)">
+    <p class="text-red-600" *ngFor="let erro of obterMensaxesErro(controlName, control.errors)">
+      {{erro}}
+    </p>
+  </ng-container>
+</ng-template>
+
+<div
+  class="flex flex-col items-center mx-auto my-4 gap-2 border-2 border-blue-100 rounded bg-teal-50 shadow-md shadow-slate-400 py-4 w-96">
+  <app-titulo [titulo]="titulo"></app-titulo>
+  <form [formGroup]="form" (ngSubmit)="this.enviarFormulario()" class="w-11/12">
+    <!--Input nome de usuario-->
+    <label class="text-blue-800">Usuario</label>
+    <input type="text" formControlName="usuario" (input)="limparErrosServidor('usuario')"
+       [ngClass]="{
+        'border-2 rounded text-blue-800': true,
+        'border-blue-200': !campoInvalido(this.usuario),
+        'border-red-400': campoInvalido(this.usuario)
+        }">
+
+    <div class="form-erros-container">
+      <ng-container *ngTemplateOutlet="errosTemplate; context: obterContexto(this.usuario, 'usuario')"></ng-container>
+      <ng-container *ngIf="errosServidor['usuario']">
+        <p *ngFor="let erro of errosServidor['usuario']" class="text-red-600">{{erro}}</p>
+      </ng-container>
+    </div>
+
+
+
+    <!--Input email
+    <label class="text-blue-800">Email</label>
+    <input type="email" formControlName="email" (input)="limparErrosServidor('email')" [ngClass]="{
+      'border-2 rounded text-blue-800': true,
+      'border-blue-200': !campoInvalido(this.email),
+      'border-red-400': campoInvalido(this.email)
+      }">
+
+    <div class="form-erros-container">
+      <ng-container *ngTemplateOutlet="errosTemplate; context: obterContexto(this.email, 'email')"></ng-container>
+      <ng-container *ngIf="errosServidor['email']">
+        <p *ngFor="let erro of errosServidor['email']">{{erro}}</p>
+      </ng-container>
+    </div>
+    -->
+
+
+    <!--Input contrasinal-->
+    <label class="text-blue-800">Contrasinal</label>
+    <input type="password" formControlName="contrasinal" [ngClass]="{
+      'border-2 rounded text-blue-800': true,
+      'border-blue-200': !campoInvalido(this.contrasinal),
+      'border-red-400': campoInvalido(this.contrasinal)
+      }">
+
+    <div class="form-erros-container">
+      <ng-container
+        *ngTemplateOutlet="errosTemplate; context: obterContexto(this.contrasinal, 'contrasinal')"></ng-container>
+    </div>
+
+
+
+    <input type="submit" [disabled]="!form.valid ? true : false" [value]="titulo" [ngClass]="{
+      'border-2 rounded-xl shadow-inner font-bold text-white p-1': true,
+      'bg-blue-300 border-blue-400 hover:cursor-not-allowed': !form.valid,
+      'bg-blue-600 text-teal-50 hover:cursor-pointer': form.valid
+    }">
+  </form>
+
+</div>
