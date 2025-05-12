@@ -8,6 +8,7 @@ import { AdministracionComponent } from './administracion/administracion.compone
 import { PerfilComponent } from './perfil/perfil.component';
 import { GruposComponent } from './grupos/grupos.component';
 import { adminGuard } from './admin.guard';
+import { XeradorQRComponent } from './xerador-qr/xerador-qr.component';
 
 export const routes: Routes = [
   {path: '', component: InicioComponent},
@@ -21,5 +22,6 @@ export const routes: Routes = [
   {path: 'ligazons/:name', component: LigazonsComponent},
   {path: 'grupos', component: GruposComponent},
   {path: 'grupos/:name', component: GruposComponent},
+  {path: 'qr', component: XeradorQRComponent},
   {path: '*', component: InicioComponent},
 ];
