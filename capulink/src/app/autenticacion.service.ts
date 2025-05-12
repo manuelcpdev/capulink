@@ -9,7 +9,7 @@ import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class AutenticacionService {
-  apiHost: string = 'http://localhost';
+  apiHost: string = 'http://192.168.1.120';
   apiPort: string = ':8000'
   /**
    * URL da API do servidor en Laravel Sanctum
@@ -63,9 +63,10 @@ export class AutenticacionService {
       this.http.get(this.api + '/sanctum/csrf-cookie', { withCredentials: true }).subscribe({
         next: (v) => {
           //this.headers.set('X-XSRF-TOKEN', this.cookieService.get('XSRF-TOKEN'));
+          console.log('CSRF Token obtido ')
         },
         error: (e) => console.log(e),
-        complete: () => console.log('Completado intento de autenticación')
+        complete: () => console.log('Fin do intento de obtención de CSRF')
       })
     }
   }
@@ -125,7 +126,9 @@ export class AutenticacionService {
   comprobarConexion(): Observable<boolean> {
     return this.http.get<{ conectado: boolean }>(`${this.api}/usuario-conectado`, this.opcionsComuns()).pipe(
       map(response => response.conectado),
-      catchError(() => of(false)) // Si hay un error, se asume que no está conectado
+      catchError((e) => {
+        return of(false)
+      }) // Se hai un erro, asúmese que o usuario non é admin
     );
   }
 
@@ -163,7 +166,7 @@ export class AutenticacionService {
   }
 
   /**
-   * Devolve o token XSRF para realizar consultas á API en Laravel Sanctum
+   * Devolve o token XSRF gardado nas cookies para realizar consultas á API en Laravel Sanctum
    * @returns
    */
   obterXSRF() {
@@ -190,11 +193,5 @@ export class AutenticacionService {
       withCredentials: true,
       headers: this.obterHeaderXSRF(),
     }
-  }
-
-
-
-  actualizarEstado() {
-
   }
 }
