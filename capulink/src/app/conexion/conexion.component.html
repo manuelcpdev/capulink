@@ -1,3 +1,4 @@
+<!--
 <div class="host-centrado">
   <h2 id="subtitulo">Conectarse</h2>
   <form [formGroup]="conexion" #form="ngForm" (submit)="iniciarSesion(conexion)">
@@ -24,3 +25,5 @@
 
   </form>
 </div>
+-->
+<app-base-form-autenticacion titulo="Conectarse" [form]="this.conexion" (formSubmit)="iniciarSesion($event)" [errosServidor]="errosServidor"></app-base-form-autenticacion>
