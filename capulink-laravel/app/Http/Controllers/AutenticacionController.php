@@ -23,7 +23,7 @@ class AutenticacionController extends Controller
         $regras = [
             'usuario' => 'required|unique:users,name',
             'contrasinal' => 'required|min:6',
-            'email' => 'required|unique:users,email',
+            //'email' => 'required|unique:users,email',
         ];
 
         $validator = Validator::make($request->all(), $regras);
