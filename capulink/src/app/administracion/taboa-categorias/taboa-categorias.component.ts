@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AutenticacionService } from '../../autenticacion.service';
+import { CategoriasService } from '../../categorias/categorias.service';
 
 @Component({
   selector: 'app-taboa-categorias',
@@ -9,4 +11,8 @@ import { Component } from '@angular/core';
 })
 export class TaboaCategoriasComponent {
 
+  constructor(private autenticacionService: AutenticacionService, private categoriasService: CategoriasService) { }
+  obterCategorias() {
+
+  }
 }
