@@ -4,13 +4,13 @@ import { FormArray, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
-
+import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class AutenticacionService {
-  apiHost: string = 'http://192.168.1.120';
-  apiPort: string = ':8000'
+  apiHost: string = environment.apiUrl;
+  apiPort: string = ''
   /**
    * URL da API do servidor en Laravel Sanctum
    */
