@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost', 'http://localhost:4200', 'http://localhost:4201', '192.168.1.120' , 'http://192.168.1.120', 'http://192.168.1.120:4201', 'http://192.168.1.120:4200'],
+    'allowed_origins' => ['https://capulink.com', 'capulink.com', 'http://localhost', 'http://localhost:4200', 'http://localhost:4201', '192.168.1.120' , 'http://192.168.1.120', 'http://192.168.1.120:4201', 'http://192.168.1.120:4200'],
 
     'allowed_origins_patterns' => [],
 
