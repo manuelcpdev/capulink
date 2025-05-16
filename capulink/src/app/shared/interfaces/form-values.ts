@@ -8,4 +8,5 @@ export interface FormValues {
   url: string;
   descricion: string;
   grupo?: number;
+  apropiado?: boolean;
 }
