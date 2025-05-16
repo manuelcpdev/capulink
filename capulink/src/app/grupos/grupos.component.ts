@@ -1,13 +1,15 @@
 import { Component, OnInit, SimpleChange, SimpleChanges } from '@angular/core';
 import { GruposService } from './grupos.service';
 import { FormGrupoComponent } from '../form-grupo/form-grupo.component';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { GrupoLigazonsComponent } from '../grupo-ligazons/grupo-ligazons.component';
+import { TituloComponent } from "../titulo/titulo.component";
+import { AutenticacionService } from '../autenticacion.service';
 
 @Component({
   selector: 'app-grupos',
   standalone: true,
-  imports: [FormGrupoComponent, NgIf, NgClass, NgFor, GrupoLigazonsComponent],
+  imports: [FormGrupoComponent, NgIf, NgClass, NgFor, GrupoLigazonsComponent, TituloComponent, NgTemplateOutlet, AsyncPipe],
   templateUrl: './grupos.component.html',
   styleUrl: './grupos.component.scss'
 })
@@ -17,6 +19,7 @@ export class GruposComponent implements OnInit {
   visibilidadLigazonsGrupo = false;
 
   gruposPublicos: any[] = [];
+  usuarioConectado = this.autenticacionService.usuarioConectado$;
 
   actualizarEstadoVisibilidade(visible: boolean): void {
     if (!visible) {
@@ -51,7 +54,7 @@ export class GruposComponent implements OnInit {
   gruposUsuario: any[] = [];
   formGrupoVisible: boolean = false;
 
-  constructor(private gruposService: GruposService) { }
+  constructor(private gruposService: GruposService, private autenticacionService: AutenticacionService) { }
 
   ngOnInit(): void {
     //Inicializar grupos
