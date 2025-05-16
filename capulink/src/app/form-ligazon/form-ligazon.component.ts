@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticacionService } from '../autenticacion.service';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service';
@@ -29,7 +29,7 @@ export class FormLigazonComponent implements OnInit {
    * @enum 'creacion' | 'edicion'
    */
   @Input() modo: string = 'creacion';
-  @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '', grupo: 0 }; // Usa o tipo FormValues
+  @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '', grupo: 0, apropiado: true }; // Usa o tipo FormValues
   @Input() visibilidade: boolean = false;
   @Output() visibilidadeCambiada = new EventEmitter<boolean>();
   gruposUsuario: any[] = [];
@@ -130,7 +130,10 @@ export class FormLigazonComponent implements OnInit {
   get agochado() {
     return this.formulario.controls['agochado'];
   }
-
+  /**
+   * TODO: Solucionar erro visual no que as seleccións por defecto para checkbox e radiobutton non aparecen marcadas
+   * ao cambiar de opción
+   */
   get apropiado() {
     return this.formulario.controls['apropiado'];
   }
@@ -146,6 +149,8 @@ export class FormLigazonComponent implements OnInit {
   get grupo() {
     return this.formulario.controls['grupo'];
   }
+
+  apropiadoChecked: boolean = true;
 
   /**
    * Comproba se o valor dun control foi modificado polo usuario ou se foi deixado en branco tendo erros
@@ -259,6 +264,9 @@ export class FormLigazonComponent implements OnInit {
     return controlsOpcion;
   }
 
+  /**
+   * Resetea o formulario e engade ou quita controis según a opción seleccionada
+   */
   xerarFormGroup(): void {
     this.formulario.reset();
     this.controlsForm = this.obterControlsOpcion();
@@ -367,6 +375,8 @@ export class FormLigazonComponent implements OnInit {
     if (changes['valoresForm'] || this.visibilidade) {
       this.controlsUsuario.titulo.setValue(this.valoresForm['titulo']);
       this.controlsUsuario.etiquetas.setValue(this.separarArrayConComas(this.valoresForm['etiquetas']));
+      this.controlsUsuario.apropiado.setValue(this.valoresForm['apropiado'] ? this.valoresForm['apropiado'] : true);
+      this.apropiadoChecked = true;
       this.controlsForm.url.setValue(this.valoresForm.url);
       this.controlsForm.url.disable();
       this.controlsForm.descricion.setValue(this.valoresForm.descricion);

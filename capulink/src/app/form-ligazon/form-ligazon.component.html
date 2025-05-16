@@ -3,7 +3,9 @@
   <!-- Campo Título -->
   <div>
     <label for="titulo">Título*</label>
-    <input id="titulo" formControlName="titulo" />
+    <input id="titulo" formControlName="titulo" [ngClass]="{
+      'border-2': true,
+    }" />
     <div class="form-erros-container" *ngIf="titulo.touched || titulo.dirty">
       <span *ngIf="tenErro('titulo', 'required')">O título é obrigatorio</span>
     </div>
@@ -12,7 +14,9 @@
   <!-- Campo URL -->
   <div>
     <label for="url">URL*</label>
-    <input id="url" formControlName="url" />
+    <input id="url" formControlName="url" [ngClass]="{
+      'border-2': true,
+    }" />
     <div class="form-erros-container" *ngIf="url.touched || url.dirty">
       <span *ngIf="tenErro('url', 'required')">A URL é obrigatoria</span>
       <span *ngIf="tenErro('url', 'pattern')">Introduza unha URL válida</span>
@@ -22,32 +26,42 @@
   <!-- Campo Descrición -->
   <div *ngIf="formulario.get('descricion')">
     <label for="descricion">Descrición</label>
-    <input id="descricion" formControlName="descricion" />
+    <input id="descricion" formControlName="descricion" [ngClass]="{
+      'border-2': true,
+    }" />
   </div>
 
   <!-- Campo Etiquetas -->
   <div *ngIf="formulario.get('etiquetas')">
     <label for="etiquetas">Etiquetas (separe con comas)</label>
-    <input id="etiquetas" formControlName="etiquetas"  />
+    <input id="etiquetas" formControlName="etiquetas" [ngClass]="{
+      'border-2': true,
+    }" />
   </div>
   <div *ngIf="formulario.get('etiquetas')?.hasError('duplicados')">
-    <p class="error">As etiquetas non poden ser duplicadas.</p>
+    <p class="text-red-600">As etiquetas non poden ser duplicadas.</p>
   </div>
   <!-- Campo Agochado -->
   <div *ngIf="formulario.get('agochado')">
     <label for="agochado">Agochado</label>
     <!-- <input type="checkbox" id="agochado" formControlName="agochado" /> -->
     <div class="flex-row"><span>Si</span>
-      <input type="radio" id="agochado" formControlName="agochado" [value]="true" />
+      <input type="radio" id="agochado" formControlName="agochado" [value]="true" [ngClass]="{
+        'border-2': true,
+      }" />
       <span>Non</span>
-      <input type="radio" id="agochado" formControlName="agochado" [value]="false" />
+      <input type="radio" id="agochado" formControlName="agochado" [value]="false" [ngClass]="{
+        'border-2': true,
+      }" />
     </div>
   </div>
 
   <!-- Campo Apropiado -->
-  <div *ngIf="formulario.get('apropiado')">
+  <div *ngIf="formulario.get('apropiado')" class="flex flex-col">
     <label for="apropiado">Apropiado</label>
-    <input type="checkbox" id="apropiado" formControlName="apropiado" [value]="true"/>
+    <input type="checkbox" id="apropiado" formControlName="apropiado" [checked]="apropiadoChecked" [ngClass]="{
+      'border-2 p-52': true,
+    }" />
   </div>
   <div *ngIf="formulario.get('grupo')">
     <label>Grupo</label>
