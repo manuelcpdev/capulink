@@ -1,14 +1,3 @@
-@import '../../styles.scss';
-
-:host {
-  @extend .host-centrado;
-  justify-content: left;
-}
-
-#ligazons-gardadas {
-
-}
-
 .contenedor-ligazons-fillo {
   display: flex;
   flex-direction: column;
