@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { XestorCookiesUsuarioService } from '../xestor-cookies-usuario.service'; // Importa o teu servizo
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { LigazonsService } from './ligazons.service';
 import { ActivatedRoute } from '@angular/router';
 import { BotonEliminarComponent } from '../shared/boton-eliminar/boton-eliminar.component';
@@ -10,17 +10,22 @@ import { Ligazon } from './ligazon';
 import { FormGroup } from '@angular/forms';
 import { FormLigazonComponent } from '../form-ligazon/form-ligazon.component';
 import { FormValues } from '../shared/interfaces/form-values';
+import { HelperService } from '../shared/helper';
+import { PopupComponent } from "../shared/popup/popup.component";
+import { AcortarStringPipe } from '../shared/pipes/acortar-string.pipe';
+import { CopiarPortapapeisDirective } from '../shared/directives/copiar-portapapeis.directive';
 
 @Component({
   selector: 'app-ligazons',
   templateUrl: './ligazons.component.html',
   styleUrls: ['./ligazons.component.scss'],
   standalone: true,
-  imports: [NgFor, NgIf, BotonEliminarComponent, BotonEditarComponent, FormLigazonComponent],
+  imports: [NgFor, NgIf, BotonEliminarComponent, BotonEditarComponent, FormLigazonComponent, NgTemplateOutlet, PopupComponent, AcortarStringPipe, CopiarPortapapeisDirective],
 })
 export class LigazonsComponent implements OnInit {
   edicionActiva: boolean = false;
   valoresLigazonEdicion: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '' }; // Usa o tipo FormValues
+  HelperService = HelperService;
 
   //valoresLigazonEdicion: string[] = [];
   eliminarLigazon(index: number) {
@@ -122,6 +127,10 @@ export class LigazonsComponent implements OnInit {
 
   actualizarLigazonUsuario(formulario: FormGroup, tipo: string, index: number) {
     this.ligazonsService.actualizarLigazonUsuario(formulario, 'usuario', index).subscribe()
+  }
+
+  abrirNovaPestana(url: string) {
+    window.open(url, "_blank");
   }
 }
 

@@ -1,67 +1,65 @@
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center my-4">
   <div>
-    <h1 id="titulo">Ligazóns</h1>
+    <h1 id="" class="text-2xl font-bold text-blue-800">Ligazóns</h1>
   </div>
-<div *ngIf="ligazonsUsuario.length == 0 && ligazonsCookies.length == 0">
-  <p>Todavía non tes ligazóns gardadas</p>
-  <p>Engade ligazóns na páxina principal para velas aquí</p>
+  <div *ngIf="ligazonsUsuario.length == 0 && ligazonsCookies.length == 0">
+    <p>Todavía non tes ligazóns gardadas</p>
+    <p>Engade ligazóns na páxina principal para velas aquí</p>
+  </div>
+  <div id="" class="flex flex-col md:flex-row mt-4 w-11/12 md:w-11/12 gap-6">
+    <ng-container *ngTemplateOutlet="carta; context: {tipo: 'cookies', ligazons: ligazonsCookies, titulo: 'Ligazóns nas cookies'}"></ng-container>
+    <ng-container *ngTemplateOutlet="carta; context: {tipo: 'usuario', ligazons: ligazonsUsuario, titulo: 'Ligazóns do usuario'}"></ng-container>
+  </div>
+  <!--<ng-container *ngIf="edicionActiva">
+    <app-form-ligazon [class]="edicionActiva ? 'popup' : ''" [modo]="'edicion'" [opcion]="'usuario'"
+      [valoresForm]="valoresLigazonEdicion" [visibilidade]="edicionActiva"
+      (visibilidadeCambiada)="actualizarVisibilidade($event)"></app-form-ligazon>
+  </ng-container>-->
+  <app-popup *ngIf="edicionActiva" (visible)="actualizarVisibilidade($event)">
+    <app-form-ligazon [modo]="'edicion'" [opcion]="'usuario'"
+    [valoresForm]="valoresLigazonEdicion" [visibilidade]="edicionActiva"
+    (visibilidadeCambiada)="actualizarVisibilidade($event)"></app-form-ligazon>
+  </app-popup>
 </div>
-  <div id="contenedor-cartas">
-    <!-- Tarxeta para ligazóns gardadas en cookies -->
-    <div class="carta" *ngIf="ligazonsCookies.length > 0">
-      <div class="titulo-carta">
-        <h2>Ligazóns nas cookies</h2>
-      </div>
-      <div class="contenedor-ligazons">
-        <div *ngFor="let ligazon of ligazonsCookies; let i = index" class="contenedor-ligazons-fillo">
-          <div class="contenedor-ligazons-fillo-header">
-            <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
-            <div class="contenedor-ligazons-fillo-header-opcions">
-              <!--<button class="editar-ligazon"><i class="fas fa-edit"></i></button>-->
-              <button class="eliminar-ligazon" (click)="this.xestorCookies.eliminarLigazon(i)"><i
-                  class="fa-solid fa-delete-left"></i></button>
-            </div>
-          </div>
-          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
-          <p (click)="toggleDescriptionCookies(i)" class="toggle-descricion">
-            <i class="fa-solid fa-caret-right" [class.fa-rotate-90]="descricionVisiblesCookies[i]"></i>
-            Descrición
-          </p>
-          <p *ngIf="descricionVisiblesCookies[i]" class="description">
-            {{ ligazon.descricion }}
-          </p>
-        </div>
-      </div>
-    </div>
 
-    <!-- Tarxeta para ligazóns asociadas ao usuario -->
-    <div class="carta" *ngIf="ligazonsUsuario.length > 0">
-      <div class="titulo-carta">
-        <h2>Ligazóns do usuario</h2>
-      </div>
-      <div class="contenedor-ligazons">
-        <div *ngFor="let ligazon of ligazonsUsuario; let i = index" class="contenedor-ligazons-fillo">
-          <div class="contenedor-ligazons-fillo-header">
-            <h3 class="titulo-ligazon">{{ ligazon.titulo }}</h3>
-            <div class="contenedor-ligazons-fillo-header-opcions">
-              <app-boton-editar [id]="ligazon.ligazon_id" (editar)="amosarFormularioLigazonEditar($event)"></app-boton-editar>
-              <app-boton-eliminar [id]="ligazon.ligazon_id" [texto]="'Eliminar'" (eliminar)="eliminarLigazonUsuario($event)">
-              </app-boton-eliminar>
-            </div>
+<ng-template let-tipo="tipo" let-ligazons="ligazons" let-titulo="titulo" #carta>
+  <div class="w-full border" *ngIf="ligazons.length > 0">
+    <div class="">
+      <h2 class="mx-5 text-xl text-blue-900 font-bold text-center border-b-2">{{ titulo }}</h2>
+    </div>
+    <div class="mt-1 mx-5 overflow-y-auto h-60 max-h-60">
+      <div *ngFor="let ligazon of ligazons!.reverse(); let i = index" class="mt-5">
+        <div class="contenedor-ligazons-fillo-header">
+          <h3 class="titulo-ligazon text-lg text-blue-900 font-bold">{{ ligazon.titulo }}</h3>
+          <div class="flex self-end right-0 ml-auto gap-2">
+            @if (tipo === "usuario") {
+            <app-boton-editar [id]="ligazon.ligazon_id"
+              (editar)="amosarFormularioLigazonEditar($event)"></app-boton-editar>
+            <app-boton-eliminar [id]="ligazon.ligazon_id" [texto]="'Eliminar'"
+              (eliminar)="eliminarLigazonUsuario($event)">
+            </app-boton-eliminar>
+            }
+            @if (tipo === "cookies") {
+
+            <app-boton-eliminar [id]="i" [texto]="'Eliminar'"
+              (eliminar)="this.xestorCookies.eliminarLigazon($event)">
+            </app-boton-eliminar>
+            }
           </div>
-          <p><a [href]="ligazon.url" target="_blank">{{ ligazon.url }}</a></p>
-          <p (click)="toggleDescricionUsuario(i)" class="toggle-descricion">
-            <i class="fa-solid fa-caret-right" [class.fa-rotate-90]="descricionVisiblesUsuario[i]"></i>
-            Descrición
-          </p>
-          <p *ngIf="descricionVisiblesUsuario[i]" class="description">
-            {{ ligazon.descricion }}
-          </p>
         </div>
+        <p><a [href]="ligazon.url" target="_blank" class="text-blue-500 underline">{{ ligazon.url }}</a></p>
+        <p (click)="toggleDescricionUsuario(i)" class="toggle-descricion text-blue-800">
+          <i class="fa-solid fa-caret-right text-blue-800" [class.fa-rotate-90]="descricionVisiblesUsuario[i]"></i>
+          Descrición
+        </p>
+        <p *ngIf="descricionVisiblesUsuario[i]" class="description text-blue-800">
+          {{ ligazon.descricion }}
+        </p>
+        <button copiarPortapapeis (copiarPortapapeis)="abrirNovaPestana('https://www.virustotal.com/gui/home/url')" [textoAPortapapeis]="ligazon.url" class="block p-1 px-2 border font-bold text-blue-500 hover:cursor-pointer ">Copiar ligazón e analizar en Virus Total</button>
+        <ng-container *ngIf="HelperService.convertirAVirusTotalURL(ligazon.url) as vtURL">
+          <a [href]="vtURL" target="_blank" class="text-left underline hidden">{{ vtURL| acortarString }}</a>
+        </ng-container>
       </div>
     </div>
   </div>
-  <ng-container *ngIf="edicionActiva">
-    <app-form-ligazon [class]="edicionActiva ? 'popup' : ''" [modo]="'edicion'" [opcion]="'usuario'" [valoresForm]="valoresLigazonEdicion" [visibilidade]="edicionActiva" (visibilidadeCambiada)="actualizarVisibilidade($event)"></app-form-ligazon>
-  </ng-container>
-</div>
+</ng-template>
