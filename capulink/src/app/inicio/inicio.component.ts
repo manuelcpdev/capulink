@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { TabsComponent } from "../tabs/tabs.component";
 import { FormLigazonComponent } from '../form-ligazon/form-ligazon.component';
 import { AutenticacionService } from '../autenticacion.service';
+import { TituloComponent } from "../titulo/titulo.component";
+import { SubtituloComponent } from "../shared/components/subtitulo/subtitulo.component";
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [TabsComponent, FormLigazonComponent],
+  imports: [TabsComponent, FormLigazonComponent, TituloComponent, SubtituloComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.scss',
 })
