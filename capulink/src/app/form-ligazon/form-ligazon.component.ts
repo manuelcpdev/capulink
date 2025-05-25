@@ -130,10 +130,7 @@ export class FormLigazonComponent implements OnInit {
   get agochado() {
     return this.formulario.controls['agochado'];
   }
-  /**
-   * TODO: Solucionar erro visual no que as seleccións por defecto para checkbox e radiobutton non aparecen marcadas
-   * ao cambiar de opción
-   */
+
   get apropiado() {
     return this.formulario.controls['apropiado'];
   }
@@ -293,6 +290,8 @@ export class FormLigazonComponent implements OnInit {
     const etiquetasValor = this.formulario.get('etiquetas')?.value;
     if (typeof etiquetasValor === 'string' && etiquetasValor.trim() !== '') {
       const etiquetasArray = etiquetasValor.split(',').map(titulo => ({ titulo: titulo.trim() } as Etiqueta)); // Converte en obxectos Etiqueta
+      console.log('Valor de etiquetasArray:')
+      console.table(etiquetasArray)
       this.formulario.patchValue({ etiquetas: etiquetasArray });
     } else {
       this.formulario.patchValue({ etiquetas: [] });
@@ -314,8 +313,9 @@ export class FormLigazonComponent implements OnInit {
     }
     if (this.opcion == 'usuario') {
       if (this.modo == 'edicion') {
-        this.convertirEtiquetasEdicion();
+        this.convertirEtiquetas();
         console.log('Etiquetas do formulario:');
+        console.table(this.formulario.get('etiquetas')?.value)
         console.table(this.valoresForm.etiquetas);
 
         this.formulario.addControl('ligazon_id', new FormControl(this.valoresForm.ligazon_id));
@@ -343,6 +343,7 @@ export class FormLigazonComponent implements OnInit {
           },
           error: (err) => {
             console.log(err);
+            alert('Error: a ligazón xa existe para este usuario!')
           },
         });
 
@@ -360,6 +361,7 @@ export class FormLigazonComponent implements OnInit {
         },
         error: (err) => {
           console.log(err);
+          alert('Error: a ligazón xa existe para este grupo!')
         },
       });
 
@@ -376,13 +378,15 @@ export class FormLigazonComponent implements OnInit {
       this.controlsUsuario.titulo.setValue(this.valoresForm['titulo']);
       this.controlsUsuario.etiquetas.setValue(this.separarArrayConComas(this.valoresForm['etiquetas']));
       this.controlsUsuario.apropiado.setValue(this.valoresForm['apropiado'] ? this.valoresForm['apropiado'] : true);
-      this.apropiadoChecked = true;
       this.controlsForm.url.setValue(this.valoresForm.url);
       this.controlsForm.url.disable();
       this.controlsForm.descricion.setValue(this.valoresForm.descricion);
       this.formulario = new FormGroup(this.controlsForm);
-    } else {
-      this.formulario = new FormGroup(this.controlsForm);
+      this.formulario.setControl('apropiado', new FormControl(true))
+    } else if (this.opcion !== 'cookies') {
+      //this.formulario = new FormGroup(this.controlsForm);
+      this.formulario.setControl('apropiado', new FormControl(true))
+      this.formulario.setControl('agochado', new FormControl(true))
     }
   }
 }

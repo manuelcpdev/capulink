@@ -45,7 +45,8 @@
   <div *ngIf="formulario.get('agochado')">
     <label for="agochado">Agochado</label>
     <!-- <input type="checkbox" id="agochado" formControlName="agochado" /> -->
-    <div class="flex-row"><span>Si</span>
+    <div class="flex-row gap-0">
+      <span>Si</span>
       <input type="radio" id="agochado" formControlName="agochado" [value]="true" [ngClass]="{
         'border-2': true,
       }" />
@@ -57,10 +58,10 @@
   </div>
 
   <!-- Campo Apropiado -->
-  <div *ngIf="formulario.get('apropiado')" class="flex flex-col">
+  <div *ngIf="formulario.get('apropiado')" class="flex mt-2">
     <label for="apropiado">Apropiado</label>
-    <input type="checkbox" id="apropiado" formControlName="apropiado" [checked]="apropiadoChecked" [ngClass]="{
-      'border-2 p-52': true,
+    <input type="checkbox" id="apropiado" formControlName="apropiado"  [ngClass]="{
+      'border-2 p-52 self-end': true,
     }" />
   </div>
   <div *ngIf="formulario.get('grupo')">
