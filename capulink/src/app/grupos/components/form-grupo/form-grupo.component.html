@@ -1,0 +1,31 @@
+<h2 class="subtitulo-centrado">Creación de grupo</h2>
+<form id="form-grupo" [formGroup]="formulario" (submit)="crearGrupo(formulario)">
+  <div>
+    <label>Título</label>
+    <input type="text" formControlName="titulo">
+  </div>
+  <div>
+    <label>Descrición</label>
+    <input type="text" formControlName="descricion">
+  </div>
+  <div>
+    <label>Apropiado</label>
+    <div class="flex-row">
+      <span>Si</span>
+      <input type="radio" formControlName="apropiado" [value]="true">
+      <span>Non</span>
+      <input type="radio" formControlName="apropiado" [value]="false">
+    </div>
+
+  </div>
+  <div>
+    <label>Etiquetas</label>
+    <input type="text" formControlName="etiquetas" (blur)="convertirEtiquetas()">
+  </div>
+  <button type="submit" class="boton-xeral-form"
+    [ngClass]="{'boton-habilitado': formulario.valid, 'boton-deshabilitado': formulario.invalid}"
+    [disabled]="formulario.invalid">
+    Crear grupo
+  </button>
+  <button class="cancelar" (click)="cancelar(popupActivo)">Cancelar</button>
+</form>

@@ -1,0 +1,29 @@
+<!--
+<div class="host-centrado">
+  <h2 id="subtitulo">Conectarse</h2>
+  <form [formGroup]="conexion" #form="ngForm" (submit)="iniciarSesion(conexion)">
+    <label>Usuario</label>
+    <input type="text" formControlName="usuario" (input)="limparErros('usuario')">
+    <div class="form-erros-container">
+      <p *ngIf="usuario?.errors?.['required'] && usuario?.touched && usuario?.invalid">Debe introducir un nome de
+        usuario</p>
+      <ng-container *ngIf="errosServidor['usuario']">
+        <p *ngFor="let erro of errosServidor['usuario']">{{erro}}</p>
+      </ng-container>
+    </div>
+
+    <label>Contrasinal</label>
+    <input type="password" formControlName="contrasinal" (input)="limparErros('contrasinal')">
+    <div class="form-erros-container">
+      <span *ngIf="contrasinal?.errors?.['required'] && contrasinal?.touched && contrasinal?.invalid">Debe introducir un
+        contrasinal</span>
+        <ng-container *ngIf="errosServidor['contrasinal']">
+          <p *ngFor="let erro of errosServidor['contrasinal']">{{erro}}</p>
+        </ng-container>
+    </div>
+    <input type="submit" value="Conectarse" [disabled]="!form.valid ? true : false">
+
+  </form>
+</div>
+-->
+<app-base-form-autenticacion titulo="Conectarse" [form]="this.conexion" (formSubmit)="iniciarSesion($event)" [errosServidor]="errosServidor"></app-base-form-autenticacion>

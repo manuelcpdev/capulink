@@ -1,0 +1,11 @@
+<div class="">
+  <ul class="flex mb-0 gap-1">
+    <li *ngFor="let opcion of opcions"
+        (click)="cambiarOpcion(opcion)"
+        [class.pestanas__elemento--activo]="opcion === opcionSeleccionada"
+        class="border-2 border-gray-500 rounded-tl-md rounded-tr-2xl py-1 px-2 text-blue-950 font-medium hover:cursor-pointer hover:bg-teal-200"
+        >
+      {{ opcion | firstToUpperCase}}
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,50 @@
+<div class="flex flex-col items-center mt-4">
+  <app-titulo titulo="Grupos"></app-titulo>
+  <button (click)="formGrupoVisible = !formGrupoVisible"
+    class="p-2 shadow-lg bg-slate-50 text-blue-700 font-bold self-end mr-4" *ngIf="usuarioConectado|async">Crear grupo</button>
+  <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
+    <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
+      <app-form-grupo [popupActivo]="formGrupoVisible"
+        (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
+    </div>
+  </div>
+  <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
+    <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
+      <app-form-grupo [popupActivo]="formGrupoVisible"
+        (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
+    </div>
+  </div>
+  <div class="flex flex-row flex-wrap gap-6 mt-4 flex-grow  justify-center">
+    <ng-container *ngIf="usuarioConectado|async">
+      <ng-container *ngTemplateOutlet="carta; context: {grupos: gruposUsuario, titulo: 'Os teus grupos'}"></ng-container>
+    </ng-container>
+    <ng-container *ngTemplateOutlet="carta; context: {grupos: gruposPublicos, titulo: 'Grupos públicos'}"></ng-container>
+  </div>
+
+  <div *ngIf="visibilidadLigazonsGrupo && grupoSeleccionadoId" class="popup">
+    <app-grupo-ligazons [grupoId]="grupoSeleccionadoId"
+      (visibilidadeCambiada)="actualizarEstadoVisibilidade($event)"></app-grupo-ligazons>
+  </div>
+</div>
+
+
+<ng-template #carta let-grupos="grupos" let-titulo="titulo">
+  <div id="" class="text-center border-2 rounded-b-md rounded-t-md p-2">
+    <div *ngIf="grupos" class="carta">
+      <div class="titulo-carta text-xl font-bold">
+        <h2 class="text-blue-900 border-b-2"> {{ titulo ?? 'Grupos' }}</h2>
+      </div>
+      <div class="contenedor-ligazons text-start">
+        <div *ngIf="grupos.length == 0">Non hai grupos que amosar</div>
+        <div *ngFor="let grupo of grupos; index as i" class="contenedor-ligazons-fillo mb-2">
+          <div class="contenedor-ligazons-fillo-header">
+            <h2 class="font-bold text- text-blue-900 underline hover:cursor-pointer"
+              (click)="mostrarLigazons(grupo.id)">{{grupo.titulo}}</h2>
+          </div>
+          <p class="text-blue-800">{{grupo.descricion}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ng-template>

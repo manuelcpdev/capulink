@@ -1,0 +1,39 @@
+//@import '../../styles.scss';
+
+.pestanas {
+  display: flex;
+  flex-direction: row;
+
+  margin: 0;
+  padding: 0;
+
+  color: var(--cor-texto-principal);
+  font-weight: 100;
+
+  list-style: none;
+
+  &__lista {
+    display: flex;
+    gap: 3px;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  &__elemento {
+    padding: 5px 20px;
+
+    border: 1px solid #333;
+    border-radius: 10px 20px 0 0;
+
+    cursor: pointer;
+
+    &:hover {
+      background-color: #aaffc7;
+    }
+
+    &--activo {
+      background-color: #00fff36e;
+    }
+  }
+}
