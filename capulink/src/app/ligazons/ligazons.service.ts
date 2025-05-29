@@ -5,6 +5,7 @@ import { ActivatedRoute, Route } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { FormValues } from '../shared/interfaces/form-values';
+import { Ligazon } from './ligazon';
 interface LigazonObtida {
   ligazon: FormValues,
   mensaxe: string;
@@ -14,7 +15,7 @@ interface LigazonObtida {
   providedIn: 'root'
 })
 export class LigazonsService {
-  ligazonsUsuario = [];
+  ligazonsUsuario: Ligazon[] = [];
   name: string | null = null;
   constructor(private autenticacionService: AutenticacionService, private http: HttpClient, private route: ActivatedRoute) { }
 
