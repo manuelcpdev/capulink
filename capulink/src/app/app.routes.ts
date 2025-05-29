@@ -4,7 +4,7 @@ import { LigazonsComponent } from './ligazons/pages/ligazons/ligazons.component'
 import { RexistroComponent } from './autenticacion/pages/rexistro/rexistro.component';
 import { ConexionComponent } from './autenticacion/pages/conexion/conexion.component';
 import { autenticacionGuard } from './autenticacion/autenticacion.guard';
-import { AdministracionComponent } from './administracion/administracion.component';
+import { AdministracionComponent } from './administracion/pages/administracion.component';
 import { PerfilComponent } from './perfil/perfil.component';
 import { GruposComponent } from './grupos/pages/grupos/grupos.component';
 import { adminGuard } from './administracion/admin.guard';
