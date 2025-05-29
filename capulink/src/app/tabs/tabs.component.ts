@@ -1,11 +1,12 @@
 import { NgFor } from '@angular/common';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FirstToUpperCasePipe } from '../shared/pipes/first-to-upper-case.pipe';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss'],
-  imports: [NgFor],
+  imports: [NgFor, FirstToUpperCasePipe],
   standalone: true,
 })
 export class TabsComponent {
