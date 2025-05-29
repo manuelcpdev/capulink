@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AutenticacionService } from '../autenticacion.service';
+import { AutenticacionService } from '../autenticacion/autenticacion.service';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({

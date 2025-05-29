@@ -7,7 +7,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 
 import { provideRouter } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AutenticacionService } from '../autenticacion.service';
+import { AutenticacionService } from '../autenticacion/autenticacion.service';
 
 describe('LigazonsService', () => {
   let service: LigazonsService;

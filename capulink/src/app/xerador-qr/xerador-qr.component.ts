@@ -3,7 +3,7 @@ import { Component, ElementRef, Input, viewChild, ViewChild } from '@angular/cor
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import * as QRCode from 'qrcode';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { TituloComponent } from "../titulo/titulo.component";
+import { TituloComponent } from "../shared/components/titulo/titulo.component";
 
 @Component({
   selector: 'app-xerador-qr',

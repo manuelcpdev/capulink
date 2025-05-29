@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { TabsComponent } from "../tabs/tabs.component";
-import { FormLigazonComponent } from '../form-ligazon/form-ligazon.component';
-import { AutenticacionService } from '../autenticacion.service';
-import { TituloComponent } from "../titulo/titulo.component";
+import { TabsComponent } from "../shared/components/tabs/tabs.component";
+import { FormLigazonComponent } from '../ligazons/components/form-ligazon/form-ligazon.component';
+import { AutenticacionService } from '../autenticacion/autenticacion.service';
+import { TituloComponent } from "../shared/components/titulo/titulo.component";
 import { SubtituloComponent } from "../shared/components/subtitulo/subtitulo.component";
 
 @Component({

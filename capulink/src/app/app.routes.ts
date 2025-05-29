@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { InicioComponent } from './inicio/inicio.component';
-import { LigazonsComponent } from './ligazons/ligazons.component';
-import { RexistroComponent } from './rexistro/rexistro.component';
-import { ConexionComponent } from './conexion/conexion.component';
-import { autenticacionGuard } from './autenticacion.guard';
+import { LigazonsComponent } from './ligazons/pages/ligazons/ligazons.component';
+import { RexistroComponent } from './autenticacion/pages/rexistro/rexistro.component';
+import { ConexionComponent } from './autenticacion/pages/conexion/conexion.component';
+import { autenticacionGuard } from './autenticacion/autenticacion.guard';
 import { AdministracionComponent } from './administracion/administracion.component';
 import { PerfilComponent } from './perfil/perfil.component';
-import { GruposComponent } from './grupos/grupos.component';
-import { adminGuard } from './admin.guard';
+import { GruposComponent } from './grupos/pages/grupos/grupos.component';
+import { adminGuard } from './administracion/admin.guard';
 import { XeradorQRComponent } from './xerador-qr/xerador-qr.component';
 
 export const routes: Routes = [

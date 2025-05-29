@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { MenuNavegacionComponent } from "./menu-navegacion/menu-navegacion.component";
-import { AutenticacionService } from './autenticacion.service';
+import { MenuNavegacionComponent } from "./shared/components/menu-navegacion/menu-navegacion.component";
+import { AutenticacionService } from './autenticacion/autenticacion.service';
 import { CookieService } from 'ngx-cookie-service';
 
 @Component({
