@@ -1,5 +1,5 @@
 <h2 *ngIf="visibilidade && modo=='edicion'">Editando ligazón</h2>
-<form [formGroup]="formulario" id="form-ligazon" (submit)="gardarLigazon(formulario)">
+<form [formGroup]="formulario" id="form-ligazon" (submit)="gardarLigazon(formulario)" class="rounded-sm drop-shadow-lg shadow-lg ring-2 ring-slate-300 p-5">
   <!-- Campo Título -->
   <div>
     <label for="titulo">Título*</label>
