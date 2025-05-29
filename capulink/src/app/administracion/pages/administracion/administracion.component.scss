@@ -1,0 +1,16 @@
+.menu-opcions {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+
+  &__opcion {
+    border: 1px solid;
+    border-top-left-radius: 13px;
+    padding: 5px;
+
+    &:hover {
+      background-color: red;
+      cursor: pointer;
+    }
+  }
+}
