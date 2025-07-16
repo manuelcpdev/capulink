@@ -35,11 +35,10 @@ export class LigazonsService {
    * visibilidade:ligazons
    *
    */
-  obterLigazons(name: string | null): Observable<any> {
+  obterLigazons(name: string | null = null): Observable<any> {
     const endpoint = name
       ? `${this.autenticacionService.api}/usuarios/ligazons/${name}`
       : `${this.autenticacionService.api}/usuarios/ligazons`;
-
     return this.http.get<any>(endpoint, this.autenticacionService.opcionsComuns());
   }
 
@@ -82,7 +81,7 @@ export class LigazonsService {
 
     switch (tipo) {
       case 'usuario': {
-        urlChamada += `/usuarios/ligazon`;
+        urlChamada += `/usuarios/ligazon/${id}`;
       }
         break;
 
