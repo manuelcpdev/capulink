@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLigazonUsuarioRequest;
+use App\Http\Resources\LigazonUsuarioResource;
 use App\Models\Etiqueta;
 use App\Models\Ligazon;
 use App\Models\User;
@@ -11,29 +13,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Grupo;
+use App\Models\LigazonGrupo;
+use App\Models\LigazonUsuario;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class LigazonController extends Controller
 {
 
-    public function crearLigazonUsuario(Request $request)
+    public function crearLigazonUsuario(StoreLigazonUsuarioRequest $request)
     {
         // Validación de entrada
-        $validator = Validator::make($request->all(), [
-            'idCategoria' => 'nullable|integer|exists:categorias,id',
-            'titulo' => 'required|string|max:255',
-            'agochado' => 'required|boolean',
-            'apropiado' => 'required|boolean',
-            'url' => 'required|url',
-            'descricion' => 'nullable|string|max:1000',
-            'etiquetas' => 'nullable|array',
-            'etiquetas.*' => 'string|max:50', // Cada etiqueta debe ser unha cadea de texto
-        ], [
-            'idCategoria.exists' => 'A categoría proporcionada non existe.',
-            'titulo.required' => 'O título é obrigatorio.',
-            'url.required' => 'A URL é obrigatoria.',
-            'url.url' => 'A URL debe ter un formato válido.',
-            'etiquetas.*.max' => 'Cada etiqueta pode ter un máximo de 50 caracteres.',
-        ]);
+        $validator = Validator::make($request->all(), $request->rules());
 
         // Devolver erros de validación se existen
         if ($validator->fails()) {
@@ -51,17 +43,13 @@ class LigazonController extends Controller
             // Buscar ligazón existente por URL
             $ligazon = Ligazon::where('url', $validatedData['url'])->first();
 
-            if (!$ligazon) {
-                // Crear nova ligazón se non existe
-                $ligazon = new Ligazon();
-                $ligazon->categoria_id = $validatedData['idCategoria'] ?? null;
-                $ligazon->titulo = $validatedData['titulo'];
-                $ligazon->descricion = $request->input('descricion', null);
-                $ligazon->apropiado = $validatedData['apropiado'];
-                $ligazon->url = $validatedData['url'];
-                $ligazon->save();
-            }
-
+            $ligazon = Ligazon::firstOrCreate([
+                'categoria_id' => $validatedData['idCategoria'] ?? null,
+                'titulo' => $validatedData['titulo'],
+                'descricion' => $validatedData['descricion'] ?? null,
+                'apropiado' => $validatedData['apropiado'],
+                'url' => $validatedData["url"],
+            ]);
 
             // Adxuntar ligazón ao usuario autenticado
             $user = User::findOrFail(Auth::id());
@@ -81,6 +69,7 @@ class LigazonController extends Controller
                 'apropiado' => $validatedData['apropiado'],
                 'descricion' => $request->input('descricion', null),
             ]);
+
 
             // Procesar etiquetas e asociar á ligazón
             $etiquetasInput = $validatedData['etiquetas'] ?? [];
@@ -119,6 +108,16 @@ class LigazonController extends Controller
                 //'etiquetas' => $etiquetasInput,
             ], 500);
         }
+    }
+
+    public function obterLigazonUsuario2($id)
+    {
+        return new LigazonUsuarioResource(LigazonUsuario::findOrFail($id));
+    }
+
+    public function obterLigazonsUsuario2()
+    {
+        return LigazonUsuarioResource::collection(LigazonUsuario::where('user_id', null, Auth::id()));
     }
 
     /**
@@ -294,6 +293,7 @@ class LigazonController extends Controller
 
     public function eliminarLigazonsUsuario(Request $request)
     {
+        Log::info($request);
         // Validación de entrada
         $validator = Validator::make($request->all(), [
             'ligazons' => 'required|array', // Debe ser un array
@@ -302,8 +302,79 @@ class LigazonController extends Controller
             'ligazons.required' => 'É necesario proporcionar as ligazóns a eliminar.',
             'ligazons.*.exists' => 'Algunhas das ligazóns especificadas non existen.',
         ]);
+        Log::info($validator->validated(), ['Validado']);
 
-        var_dump($request->all());
+        // Retornar erros de validación se existen
+        if ($validator->fails()) {
+            Log::error($validator->validated(), ['Error']);
+            return response()->json([
+                'message' => 'Erro de validación',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $validatedData = $validator->validated();
+
+        //Obtén o usuario conectado por ID
+        $user = User::findOrFail(Auth::user() ? Auth::id() : null);
+        $ligazons = LigazonUsuario::where('user_id', $user->id)->whereIn('ligazon_id', $request->ligazons)->get();
+
+        Log::alert(json_encode($ligazons));
+        try {
+            DB::beginTransaction();
+            foreach($ligazons as $ligazonUsuario) {
+                $ligazon = $ligazonUsuario->ligazon;
+                $ligazonId = $ligazonUsuario->ligazon_id;
+                $existeLigazonParaUsuario = null;
+                $existeLigazonParaGrupo = null;
+                //Para cada ligazón, eliminar as súas etiquetas. Tamén, eliminar as etiquetas que queden orfas.
+                $etiquetasLigazon = $ligazonUsuario->etiquetas;
+                Log::info(json_encode($ligazonUsuario->etiquetas));
+
+                //Elimina as etiquetas asociadas a esta ligazón, pero só en usuario_ligazon_etiqueta
+                $ligazonUsuario->etiquetas()->detach();
+
+                //Elimina a ligazón en usuario_ligazon
+                $ligazonUsuario->delete();
+
+                $existeLigazonParaUsuario = LigazonUsuario::where('ligazon_id', $ligazonId)->exists();
+                $existeLigazonParaGrupo= LigazonGrupo::where('ligazon_id', $ligazonId)->exists();
+                Log::info('', ['existe_para_ligazon_usuario' => $existeLigazonParaUsuario, 'existe_para_ligazon_grupo' => $existeLigazonParaGrupo]);
+                if(!$existeLigazonParaUsuario && !$existeLigazonParaGrupo)
+                {
+                Log::info(json_encode(['Ligazón de \'ligazons\' antes de borrar', $ligazon->url]));
+                $ligazon->delete();
+                Log::info(json_encode(['Ligazón Usuario', $ligazonUsuario]));
+
+            }
+                DB::commit();
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+    }
+
+    public function crearLigazonDeGrupo(Request $request)
+    {
+        // Validación de entrada
+        $validator = Validator::make($request->all(), [
+            'grupo_id' => 'required|integer|exists:grupos,id',
+            'idCategoria' => 'nullable|integer|exists:categorias,id',
+            'titulo' => 'required|string|max:255',
+            'agochado' => 'required|boolean',
+            'apropiado' => 'required|boolean',
+            'descricion' => 'nullable|string|max:1000',
+            'url' => 'required|url',
+            'etiquetas' => 'nullable|array',
+            'etiquetas.*' => 'string|max:50',
+        ], [
+            'grupo_id.required' => 'O ID do grupo é obrigatorio.',
+            'grupo_id.exists' => 'O grupo especificado non existe.',
+            'titulo.required' => 'O título no é obrigatorio.',
+            'url.required' => 'A URL é obrigatoria.',
+            'url.url' => 'A URL debe ter un formato válido.',
+            'etiquetas.*.max' => 'Cada etiqueta pode ter un máximo de 50 caracteres.',
+        ]);
 
         // Retornar erros de validación se existen
         if ($validator->fails()) {
@@ -316,161 +387,73 @@ class LigazonController extends Controller
         $validatedData = $validator->validated();
 
         try {
-            DB::beginTransaction(); // Iniciar a transacción
+            DB::beginTransaction(); // Inicia a transacción
 
-            // Obter o usuario autenticado
-            $user = User::findOrFail(Auth::id());
+            // Verificar que o usuario é membro do grupo
+            $grupo = Grupo::with('users')->findOrFail($validatedData['grupo_id']);
+            $userId = Auth::id();
 
-            // Obter as ligazóns do usuario que se desexan eliminar
-            $ligazonsAEliminar = $user->ligazons()
-                ->whereIn('ligazon_id', $validatedData['ligazons'])
-                ->get();
-
-            if ($ligazonsAEliminar->isEmpty()) {
+            if (!$grupo->users->pluck('id')->contains($userId) && $grupo->user_id !== $userId) {
                 return response()->json([
-                    'message' => 'Non se atoparon ligazóns asociadas ao usuario para eliminar.',
-                ], 404);
+                    'message' => 'Non tes permisos para engadir ligazóns a este grupo.',
+                ], 403);
             }
 
-            // Eliminar as relacións na táboa intermedia (usuario_ligazón)
-            foreach ($ligazonsAEliminar as $ligazon) {
-                $user->ligazons()->detach($ligazon->id);
+            // Buscar ou crear a ligazón
+            $ligazon = Ligazon::where('url', $validatedData['url'])->first();
+            if (!$ligazon) {
+                $ligazon = new Ligazon;
+                $ligazon->titulo = $validatedData['titulo'];
+                $ligazon->descricion = $validatedData['descricion'];
+                $ligazon->apropiado = $validatedData['apropiado'];
+                $ligazon->url = $validatedData['url'];
+                $ligazon->save();
+            }
 
-                // Eliminar etiquetas asociadas ao usuario_ligazón
-                DB::table('usuario_ligazon_etiqueta')
-                    ->where('user_id', $user->id)
-                    ->where('ligazon_id', $ligazon->id)
-                    ->delete();
+            // Asociar a ligazón ao grupo con datos adicionales
+            $grupo->ligazons()->attach($ligazon->id, [
+                'titulo' => $validatedData['titulo'],
+                'descricion' => $validatedData['descricion'] ?? null,
+                'agochado' => $validatedData['agochado'],
+                'apropiado' => $validatedData['apropiado'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-                // Verificar se a ligazón queda sen usuarios asociados
-                if (!$ligazon->usuarios()->exists()) {
-                    // Eliminar etiquetas asociadas se xa non teñen relacións
-                    foreach ($ligazon->etiquetasUsuario as $etiqueta) {
-                        if (!$etiqueta->ligazons()->exists()) {
-                            $etiqueta->delete();
-                        }
-                    }
-
-                    // Eliminar a ligazón
-                    $ligazon->delete();
+            // Procesar etiquetas
+            $etiquetasInput = $validatedData['etiquetas'] ?? [];
+            foreach ($etiquetasInput as $etiquetaTitulo) {
+                $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
+                if (!$etiqueta) {
+                    $etiqueta = new Etiqueta;
+                    $etiqueta->titulo = $etiquetaTitulo;
+                    $etiqueta->save();
                 }
+                // Asociar etiqueta á ligazón e ao grupo
+                DB::table('grupo_ligazon_etiqueta')->insertOrIgnore([
+                    'grupo_id' => $grupo->id,
+                    'grupo_ligazon_id' => $ligazon->id,
+                    'etiqueta_id' => $etiqueta->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
 
             DB::commit(); // Confirmar a transacción
 
             return response()->json([
-                'message' => 'As ligazóns foron eliminadas correctamente.',
-                'ligazons_eliminadas' => $ligazonsAEliminar->pluck('id'), // IDs das ligazóns eliminadas
+                'message' => 'Ligazón creada e asociada ao grupo exitosamente.',
+                'ligazon' => $ligazon,
+                'grupo' => $grupo,
             ]);
         } catch (\Exception $e) {
-            DB::rollBack(); // Reverter cambios se ocorre un erro
+            DB::rollBack(); // Revertir cambios si ocurre un error
             return response()->json([
-                'message' => 'Erro ao eliminar as ligazóns.',
+                'message' => 'Error ao crear ou asociar a ligazón ao grupo.',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
-
-public function crearLigazonDeGrupo(Request $request)
-{
-    // Validación de entrada
-    $validator = Validator::make($request->all(), [
-        'grupo_id' => 'required|integer|exists:grupos,id',
-        'idCategoria' => 'nullable|integer|exists:categorias,id',
-        'titulo' => 'required|string|max:255',
-        'agochado' => 'required|boolean',
-        'apropiado' => 'required|boolean',
-        'descricion' => 'nullable|string|max:1000',
-        'url' => 'required|url',
-        'etiquetas' => 'nullable|array',
-        'etiquetas.*' => 'string|max:50',
-    ], [
-        'grupo_id.required' => 'O ID do grupo é obrigatorio.',
-        'grupo_id.exists' => 'O grupo especificado non existe.',
-        'titulo.required' => 'O título no é obrigatorio.',
-        'url.required' => 'A URL é obrigatoria.',
-        'url.url' => 'A URL debe ter un formato válido.',
-        'etiquetas.*.max' => 'Cada etiqueta pode ter un máximo de 50 caracteres.',
-    ]);
-
-        // Retornar erros de validación se existen
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Erro de validación',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $validatedData = $validator->validated();
-
-    try {
-        DB::beginTransaction(); // Inicia a transacción
-
-        // Verificar que o usuario é membro do grupo
-        $grupo = Grupo::with('users')->findOrFail($validatedData['grupo_id']);
-        $userId = Auth::id();
-
-        if (!$grupo->users->pluck('id')->contains($userId) && $grupo->user_id !== $userId) {
-            return response()->json([
-                'message' => 'Non tes permisos para engadir ligazóns a este grupo.',
-            ], 403);
-        }
-
-        // Buscar ou crear a ligazón
-        $ligazon = Ligazon::where('url', $validatedData['url'])->first();
-        if (!$ligazon) {
-            $ligazon = new Ligazon;
-            $ligazon->titulo = $validatedData['titulo'];
-            $ligazon->descricion = $validatedData['descricion'];
-            $ligazon->apropiado = $validatedData['apropiado'];
-            $ligazon->url = $validatedData['url'];
-            $ligazon->save();
-        }
-
-       // Asociar a ligazón ao grupo con datos adicionales
-       $grupo->ligazons()->attach($ligazon->id, [
-        'titulo' => $validatedData['titulo'],
-        'descricion' => $validatedData['descricion'] ?? null,
-        'agochado' => $validatedData['agochado'],
-        'apropiado' => $validatedData['apropiado'],
-        'created_at' => now(),
-        'updated_at' => now(),
-        ]);
-
-        // Procesar etiquetas
-        $etiquetasInput = $validatedData['etiquetas'] ?? [];
-        foreach ($etiquetasInput as $etiquetaTitulo) {
-            $etiqueta = Etiqueta::where('titulo', $etiquetaTitulo)->first();
-            if(!$etiqueta) {
-                $etiqueta = new Etiqueta;
-                $etiqueta->titulo = $etiquetaTitulo;
-                $etiqueta->save();
-            }
-            // Asociar etiqueta á ligazón e ao grupo
-            DB::table('grupo_ligazon_etiqueta')->insertOrIgnore([
-                'grupo_id' => $grupo->id,
-                'ligazon_id' => $ligazon->id,
-                'etiqueta_id' => $etiqueta->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-
-        DB::commit(); // Confirmar a transacción
-
-        return response()->json([
-            'message' => 'Ligazón creada e asociada ao grupo exitosamente.',
-            'ligazon' => $ligazon,
-            'grupo' => $grupo,
-        ]);
-    } catch (\Exception $e) {
-        DB::rollBack(); // Revertir cambios si ocurre un error
-        return response()->json([
-            'message' => 'Error ao crear ou asociar a ligazón ao grupo.',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-}
 
 
 
@@ -604,80 +587,80 @@ public function crearLigazonDeGrupo(Request $request)
     }
 
 
-public function eliminarLigazonsDeGrupo(Request $request)
-{
-    // Validar os datos de entrada
-    $validator = Validator::make($request->all(), [
-        'grupo_id' => 'required|integer|exists:grupos,id',
-        'ligazon_ids' => 'required|array',
-        'ligazon_ids.*' => 'integer|exists:ligazons,id',
-    ], [
-        'grupo_id.required' => 'O ID do grupo é obrigatorio.',
-        'grupo_id.exists' => 'O grupo especificado non existe.',
-        'ligazon_ids.required' => 'Debes proporcionar polo menos menos unha ligazón para eliminar.',
-        'ligazon_ids.*.exists' => 'Unha ou máis ligazons non existen.',
-    ]);
+    public function eliminarLigazonsDeGrupo(Request $request)
+    {
+        // Validar os datos de entrada
+        $validator = Validator::make($request->all(), [
+            'grupo_id' => 'required|integer|exists:grupos,id',
+            'ligazon_ids' => 'required|array',
+            'ligazon_ids.*' => 'integer|exists:ligazons,id',
+        ], [
+            'grupo_id.required' => 'O ID do grupo é obrigatorio.',
+            'grupo_id.exists' => 'O grupo especificado non existe.',
+            'ligazon_ids.required' => 'Debes proporcionar polo menos menos unha ligazón para eliminar.',
+            'ligazon_ids.*.exists' => 'Unha ou máis ligazons non existen.',
+        ]);
 
-    // Retornar errores de validación se existen
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Error de validación',
-            'errors' => $validator->errors(),
-        ], 422);
-    }
+        // Retornar errores de validación se existen
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $validatedData = $validator->validated();
 
-    try {
-        DB::beginTransaction(); // Inicia a transacción
+        try {
+            DB::beginTransaction(); // Inicia a transacción
 
-        // Verificar que o usuario é miembro do grupo
-        $grupo = Grupo::with('users')->findOrFail($validatedData['grupo_id']);
-        $userId = Auth::id();
+            // Verificar que o usuario é miembro do grupo
+            $grupo = Grupo::with('users')->findOrFail($validatedData['grupo_id']);
+            $userId = Auth::id();
 
-        if (!$grupo->users->pluck('id')->contains($userId) && $grupo->user_id !== $userId) {
-            return response()->json([
-                'message' => 'Non tes permisos para eliminar ligazons de este grupo.',
-            ], 403);
-        }
+            if (!$grupo->users->pluck('id')->contains($userId) && $grupo->user_id !== $userId) {
+                return response()->json([
+                    'message' => 'Non tes permisos para eliminar ligazons de este grupo.',
+                ], 403);
+            }
 
             $ligazonIds = $validatedData['ligazon_ids'];
 
-        // Verificar que as ligazons están asociadas ao grupo
-        $ligazonsAsociadas = $grupo->ligazons()->whereIn('ligazon_id', $ligazonIds)->pluck('ligazon_id')->toArray();
+            // Verificar que as ligazons están asociadas ao grupo
+            $ligazonsAsociadas = $grupo->ligazons()->whereIn('ligazon_id', $ligazonIds)->pluck('ligazon_id')->toArray();
 
-        if (empty($ligazonsAsociadas)) {
+            if (empty($ligazonsAsociadas)) {
+                return response()->json([
+                    'message' => 'Ningunha das ligazóns proporcionadas está asociada a este grupo.',
+                ], 404);
+            }
+
+            // Eliminar asociacións de ligazóns co grupo
+            $grupo->ligazons()->detach($ligazonsAsociadas);
+
+            // Eliminar asociacións de etiquetas co grupo e coas ligazóns
+            foreach ($ligazonsAsociadas as $ligazonId) {
+                DB::table('grupo_ligazon_etiqueta')
+                    ->where('grupo_id', $grupo->id)
+                    ->where('ligazon_id', $ligazonId)
+                    ->delete();
+            }
+
+
+            DB::commit(); // Confirmar a transacción
+
             return response()->json([
-                'message' => 'Ningunha das ligazóns proporcionadas está asociada a este grupo.',
-            ], 404);
+                'message' => 'As ligazons foron eliminadas do grupo exitosamente.',
+                'ligazon_ids_eliminadas' => $ligazonsAsociadas,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Revertir cambios se ocurre un error
+            return response()->json([
+                'message' => 'Error ao eliminar as ligazóns do grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Eliminar asociacións de ligazóns co grupo
-        $grupo->ligazons()->detach($ligazonsAsociadas);
-
-        // Eliminar asociacións de etiquetas co grupo e coas ligazóns
-        foreach ($ligazonsAsociadas as $ligazonId) {
-            DB::table('grupo_ligazon_etiqueta')
-                ->where('grupo_id', $grupo->id)
-                ->where('ligazon_id', $ligazonId)
-                ->delete();
-        }
-
-
-        DB::commit(); // Confirmar a transacción
-
-        return response()->json([
-            'message' => 'As ligazons foron eliminadas do grupo exitosamente.',
-            'ligazon_ids_eliminadas' => $ligazonsAsociadas,
-        ]);
-    } catch (\Exception $e) {
-        DB::rollBack(); // Revertir cambios se ocurre un error
-        return response()->json([
-            'message' => 'Error ao eliminar as ligazóns do grupo.',
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
 
 
     public function obterLigazonsUsuarioConectado()
@@ -699,6 +682,7 @@ public function eliminarLigazonsDeGrupo(Request $request)
             $ligazonsPivot[] = array_merge(
                 $ligazon->pivot->toArray(),
                 [
+                    'id' => $ligazon->id,
                     'url' => $ligazon->url,
                     'etiquetas' => $ligazon->etiquetasUsuario,
                 ]
