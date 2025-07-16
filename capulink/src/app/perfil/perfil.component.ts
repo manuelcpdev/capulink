@@ -15,7 +15,7 @@ import { PerfilService } from './perfil.service';
 export class PerfilComponent {
   nameUrl: string | null = null;
   name: string|null = null;
-  ligazons: string[] = [];
+  ligazons: any[] = [];
 
   //Foto por defecto se o usuario non ten
   foto: string | null = 'https://img.pokemondb.net/sprites/sun-moon/normal/cubone.png';
@@ -32,7 +32,7 @@ export class PerfilComponent {
         }
         if (resposta.ligazons) {
           this.ligazons = resposta.ligazons;
-          console.log(this.ligazons)
+          console.log(this.ligazons[0])
         }
 
       },
