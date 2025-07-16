@@ -12,7 +12,7 @@ export class BotonEliminarComponent {
   @Output() eliminar = new EventEmitter<number>();  // Evento para eliminar
 
   eliminarElemento() {
-    if(confirm("Seguro que quere eliminar este elemento?")) {
+    if(confirm("Seguro que quere eliminar este elemento?" + this.id)) {
       this.eliminar.emit(this.id);
     }
   }
