@@ -5,11 +5,12 @@ import { AsyncPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/comm
 import { TituloComponent } from "../../../shared/components/titulo/titulo.component";
 import { AutenticacionService } from '../../../autenticacion/autenticacion.service';
 import { GrupoLigazonsComponent } from '../../components/grupo-ligazons/grupo-ligazons.component';
+import { PopupComponent } from "../../../shared/components/popup/popup.component";
 
 @Component({
   selector: 'app-grupos',
   standalone: true,
-  imports: [FormGrupoComponent, NgIf, NgClass, NgFor, GrupoLigazonsComponent, TituloComponent, NgTemplateOutlet, AsyncPipe],
+  imports: [FormGrupoComponent, NgIf, NgClass, NgFor, GrupoLigazonsComponent, TituloComponent, NgTemplateOutlet, AsyncPipe, PopupComponent],
   templateUrl: './grupos.component.html',
   styleUrl: './grupos.component.scss'
 })

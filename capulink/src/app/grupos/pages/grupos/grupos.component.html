@@ -1,24 +1,26 @@
 <div class="flex flex-col items-center mt-4">
   <app-titulo titulo="Grupos"></app-titulo>
   <button (click)="formGrupoVisible = !formGrupoVisible"
-    class="p-2 shadow-lg bg-slate-50 text-blue-700 font-bold self-end mr-4" *ngIf="usuarioConectado|async">Crear grupo</button>
+    class="p-2 shadow-lg bg-slate-50 text-blue-700 font-bold self-end mr-4" *ngIf="usuarioConectado|async">Crear
+    grupo</button>
   <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
     <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
       <app-form-grupo [popupActivo]="formGrupoVisible"
         (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
     </div>
   </div>
-  <div class="contenedor-popup" [ngClass]="!formGrupoVisible ? 'inactivo' : ''">
-    <div *ngIf="formGrupoVisible" class="popup-absoluto-centrado">
-      <app-form-grupo [popupActivo]="formGrupoVisible"
-        (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
-    </div>
-  </div>
+  <app-popup *ngIf="formGrupoVisible" (visible)="formGrupoVisible = !formGrupoVisible">
+    <app-form-grupo [popupActivo]="formGrupoVisible"
+      (cancelarEvent)="formGrupoVisible = !formGrupoVisible"></app-form-grupo>
+  </app-popup>
+
   <div class="flex flex-row flex-wrap gap-6 mt-4 flex-grow  justify-center">
     <ng-container *ngIf="usuarioConectado|async">
-      <ng-container *ngTemplateOutlet="carta; context: {grupos: gruposUsuario, titulo: 'Os teus grupos'}"></ng-container>
+      <ng-container
+        *ngTemplateOutlet="carta; context: {grupos: gruposUsuario, titulo: 'Os teus grupos'}"></ng-container>
     </ng-container>
-    <ng-container *ngTemplateOutlet="carta; context: {grupos: gruposPublicos, titulo: 'Grupos públicos'}"></ng-container>
+    <ng-container
+      *ngTemplateOutlet="carta; context: {grupos: gruposPublicos, titulo: 'Grupos públicos'}"></ng-container>
   </div>
 
   <div *ngIf="visibilidadLigazonsGrupo && grupoSeleccionadoId" class="popup">
