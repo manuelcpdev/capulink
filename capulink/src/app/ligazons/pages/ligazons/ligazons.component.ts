@@ -20,12 +20,17 @@ import { CopiarPortapapeisDirective } from '../../../shared/directives/copiar-po
   templateUrl: './ligazons.component.html',
   styleUrls: ['./ligazons.component.scss'],
   standalone: true,
-  imports: [NgFor, NgIf, BotonEliminarComponent, BotonEditarComponent, FormLigazonComponent, NgTemplateOutlet, PopupComponent, AcortarStringPipe, CopiarPortapapeisDirective],
+  imports: [NgFor, NgIf, BotonEliminarComponent,
+    BotonEditarComponent, FormLigazonComponent, NgTemplateOutlet,
+    PopupComponent, AcortarStringPipe, CopiarPortapapeisDirective,
+  ],
 })
 export class LigazonsComponent implements OnInit {
   edicionActiva: boolean = false;
   valoresLigazonEdicion: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '' }; // Usa o tipo FormValues
   HelperService = HelperService;
+  novaLigazonPopup: boolean = false;
+  cargando: boolean = true;
 
   //valoresLigazonEdicion: string[] = [];
   eliminarLigazon(index: number) {
@@ -34,6 +39,10 @@ export class LigazonsComponent implements OnInit {
 
   actualizarVisibilidade(novaVisibilidade: boolean): void {
     this.edicionActiva = novaVisibilidade;
+  }
+
+  actualizarVisibilidadePopupNovaLigazon(novaVisibilidade: boolean) {
+    this.novaLigazonPopup = novaVisibilidade;
   }
 
   ligazonsCookies: any[] = [];
@@ -67,11 +76,17 @@ export class LigazonsComponent implements OnInit {
     this.ligazonsService.obterLigazons(this.nameUrl).subscribe({
       next: (value) => {
         this.ligazonsUsuario = value.ligazons;
+        console.log('Ligazóns con ligazon_id e outros: ');
+        console.table(this.ligazonsUsuario);
         this.descricionVisiblesUsuario = new Array(this.ligazonsUsuario.length).fill(false);
       },
       error: (err) => {
         console.table(err);
+        this.cargando = false;
       },
+      complete: () => {
+        this.cargando = false;
+      }
     });
   }
 
@@ -107,6 +122,7 @@ export class LigazonsComponent implements OnInit {
       next: (value) => {
         this.edicionActiva = true;
         this.valoresLigazonEdicion.ligazon_id = value.ligazon['ligazon_id'];
+        this.valoresLigazonEdicion.id = value.ligazon['id'];
         this.valoresLigazonEdicion.titulo = value.ligazon['titulo'];
         this.valoresLigazonEdicion.descricion = value.ligazon['descricion'];
         this.valoresLigazonEdicion.etiquetas = value.ligazon['etiquetas'];
