@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Ligazon extends Model
 {
     protected $fillable = [
-        'titulo', 'descricion', 'url', 'categoria_id', 'visibilidade'
+        'titulo',
+        'descricion',
+        'url',
+        'categoria_id',
+        'visibilidade'
     ];
 
     // Relación con Categorías (1:N)
@@ -20,29 +24,37 @@ class Ligazon extends Model
     public function usuarios()
     {
         return $this->belongsToMany(User::class, 'usuario_ligazon', 'ligazon_id', 'user_id')
-                    ->withPivot(['agochado'])  // Campos extra na táboa intermedia
-                    ->withTimestamps();
+            ->using(\App\Models\LigazonUsuario::class)
+            ->withPivot(['agochado', 'id'])  // Campos extra na táboa intermedia
+            ->withTimestamps();
     }
 
+    /*
     // Relación con Grupos (ligazóns pertencentes a grupos)
     public function grupos()
     {
         return $this->belongsToMany(Grupo::class, 'grupo_ligazon', 'ligazon_id', 'grupo_id')
-                    ->withPivot(['etiqueta_id']) // Campos extra na táboa intermedia
-                    ->withTimestamps();
+            ->withPivot(['etiqueta_id']) // Campos extra na táboa intermedia
+            ->withTimestamps();
     }
-
+    */
+    public function grupos()
+    {
+        return $this->belongsToMany(Grupo::class, 'grupo_ligazon', 'ligazon_id', 'grupo_id')
+        ->using(\App\Models\LigazonGrupo::class)
+        ->withTimestamps();
+    }
     // Relación con Etiquetas de Usuario (usuario_ligazon_etiqueta)
     public function etiquetasUsuario()
     {
-        return $this->belongsToMany(Etiqueta::class, 'usuario_ligazon_etiqueta', 'ligazon_id', 'etiqueta_id')
-                    ->withTimestamps();
+        return $this->belongsToMany(Etiqueta::class, 'usuario_ligazon_etiqueta', 'usuario_ligazon_id', 'etiqueta_id')
+            ->withTimestamps();
     }
 
     // Relación con Etiquetas de Grupo (grupo_ligazon_etiqueta)
     public function etiquetasGrupo()
     {
-        return $this->belongsToMany(Etiqueta::class, 'grupo_ligazon_etiqueta', 'ligazon_id', 'etiqueta_id')
-                    ->withTimestamps();
+        return $this->belongsToMany(Etiqueta::class, 'grupo_ligazon_etiqueta', 'grupo_ligazon_id', 'etiqueta_id')
+            ->withTimestamps();
     }
 }

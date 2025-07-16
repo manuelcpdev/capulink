@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Etiqueta extends Model
 {
+    protected $table = 'etiquetas';
     protected $fillable = ['titulo'];
     // Relación moitos a moitos cos grupos
     public function grupos()
@@ -18,6 +19,13 @@ class Etiqueta extends Model
     public function ligazons()
     {
         return $this->belongsToMany(Ligazon::class, 'usuario_ligazon_etiqueta', 'etiqueta_id', 'ligazon_id')
+                    ->withTimestamps();
+    }
+
+    // Relación moitos a moitos coas ligazóns dun usuario
+    public function ligazonsUsuario()
+    {
+        return $this->belongsToMany(LigazonUsuario::class, 'usuario_ligazon_etiqueta', 'etiqueta_id', 'ligazon_id')
                     ->withTimestamps();
     }
 
