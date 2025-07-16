@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LigazonUsuarioResource;
+use App\Models\LigazonUsuario;
 use App\Models\Perfil;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\UserTrait;
+use Illuminate\Support\Facades\Log;
 
 class PerfilController extends Controller
 {
@@ -38,11 +41,12 @@ class PerfilController extends Controller
      * Amosar perfil do usuario conectado
      */
 
-     public function amosarConectado() {
+    public function amosarConectado()
+    {
         $user = User::where('name', Auth::user()->name)->first();
 
-        if($user) {
-            $ligazons = $user->ligazons;
+        if ($user) {
+            $ligazons = LigazonUsuarioResource::collection(LigazonUsuario::with('ligazon')->where('user_id', Auth::id())->get());
             return response()->json([
                 'name' => $user->name,
                 'foto' => $user->perfil->foto,
@@ -55,7 +59,7 @@ class PerfilController extends Controller
             'mensaxe' => 'O usuario non está conectado',
             'error' => '',
         ], 400);
-     }
+    }
 
     /**
      * Amosar o perfil de usuario según o nome
@@ -68,13 +72,20 @@ class PerfilController extends Controller
             return response()->json(['error' => 'Usuario non atopado'], 404);
         }
 
-        if (Auth::user()->admin || $usuario->perfil->visibilidade == 'publico' || Auth::user()->name == $usuario->name) {
-            $ligazons = $usuario->ligazons->where('agochado', false);
+        if ($usuario->perfil->visibilidade == 'publico' || Auth::user()->admin || Auth::user()->name == $usuario->name) {
+            //$ligazons = $usuario->ligazonsUsuario->where('agochado', 0);
+            $ligazons = LigazonUsuarioResource::collection(LigazonUsuario::with('ligazon')->where('user_id', $usuario->id)->get());
+            $ligazonsFiltradas = LigazonUsuarioResource::collection($ligazons)
+                ->filter(function ($resource) {
+                    return !empty($resource->resource) && $resource->toArray(request()) !== [];
+                })->values()->toArray(request());
+
+            Log::debug($ligazonsFiltradas);
             return response()->json([
                 'mensaxe' => 'Acceso permitido',
                 'name' => $usuario->name,
                 'foto' => $usuario->perfil->foto,
-                'ligazons' => $ligazons,
+                'ligazons' => $ligazonsFiltradas,
             ], 200);
         } else {
             return response()->json([
