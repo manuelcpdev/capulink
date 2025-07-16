@@ -10,4 +10,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class PopupComponent {
   @Output() visible: EventEmitter<boolean> = new EventEmitter;
+
+  pechar(e: Event) {
+    if(e.target !== e.currentTarget) return;
+    let pechar = confirm('Queres pechar?')
+    if(pechar) {
+      this.visible.emit(false)
+    }
+  }
 }
