@@ -1,4 +1,4 @@
-<div class="host-centrado">
+<div class="flex flex-col self-center justify-center items-center">
   <h1 id="titulo">Panel de administrador</h1>
 
   <!-- Usar o componente Tabs -->
@@ -27,3 +27,4 @@
     </table>
   </div>
 </div>
+<app-taboa-reutilizable *ngIf="opcionActual === 'Ligazons' && columnas" [celdas]="celdas" [columnas]="columnas"></app-taboa-reutilizable>
