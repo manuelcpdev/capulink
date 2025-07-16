@@ -8,6 +8,7 @@ import { duplicadosValidator } from '../../../shared/validacions/duplicadosValid
 import { FormValues } from '../../../shared/interfaces/form-values';
 import { Etiqueta } from '../../../shared/interfaces/etiqueta';
 import { GruposService } from '../../../grupos/grupos.service';
+import { TipoForm } from '../../types/opcionsform';
 
 @Component({
   selector: 'app-form-ligazon',
@@ -22,13 +23,13 @@ export class FormLigazonComponent implements OnInit {
    * Opción seleccionada. Pásase o valor dende o pai, para poder ensinar un formulario ou outro (cookies, usuario, grupo)
    * @enum 'cookies'|'usuario'|'grupo'
    */
-  @Input() opcion: string = ''; // Recibe a opción seleccionada
+  @Input() opcion: TipoForm  = 'cookies'; // Recibe a opción seleccionada
 
   /**
    * Modo do formulario. Se non se especifica, estará en modo creación.
    * @enum 'creacion' | 'edicion'
    */
-  @Input() modo: string = 'creacion';
+  @Input() modo: "creacion" | "edicion" = 'creacion';
   @Input() valoresForm: FormValues = { ligazon_id: 0, id: 0, titulo: '', etiquetas: [], url: '', descricion: '', grupo: 0, apropiado: true }; // Usa o tipo FormValues
   @Input() visibilidade: boolean = false;
   @Output() visibilidadeCambiada = new EventEmitter<boolean>();
@@ -279,7 +280,10 @@ export class FormLigazonComponent implements OnInit {
       const etiquetasArray = etiquetasValor.split(',').map((etiqueta) => etiqueta.trim());
       this.formulario.patchValue({ etiquetas: etiquetasArray });
     } else {
-      this.formulario.patchValue({ etiquetas: '' });
+      console.log('El valor actual de etiquetas es:' + etiquetasValor);
+
+      //this.formulario.patchValue({ etiquetas: '' });
+      console.log('Y ahora es: ' + this.formulario.get('etiquetas')?.value);
     }
   }
 
@@ -310,6 +314,7 @@ export class FormLigazonComponent implements OnInit {
   gardarLigazon(formulario: FormGroup) {
     if (this.opcion == 'cookies') {
       this.xestorCookies.engadirLigazon(formulario.value);
+      alert('A ligazón foi actualizada con éxito!');
     }
     if (this.opcion == 'usuario') {
       if (this.modo == 'edicion') {
@@ -320,8 +325,10 @@ export class FormLigazonComponent implements OnInit {
 
         this.formulario.addControl('ligazon_id', new FormControl(this.valoresForm.ligazon_id));
         this.formulario.patchValue({ 'ligazon_id': this.valoresForm.ligazon_id });
+        this.formulario.addControl('id', new FormControl(this.valoresForm.id));
+        this.formulario.patchValue({ 'id': this.valoresForm.id });
 
-        this.ligazonsService.actualizarLigazonUsuario(formulario, 'usuario', this.valoresForm.ligazon_id).subscribe({
+        this.ligazonsService.actualizarLigazonUsuario(formulario, 'usuario', this.valoresForm.id).subscribe({
           next: (value) => {
             alert('A ligazón foi actualizada con éxito!');
           },
