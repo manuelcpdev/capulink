@@ -4,7 +4,7 @@ import { FormLigazonComponent } from '../ligazons/components/form-ligazon/form-l
 import { AutenticacionService } from '../autenticacion/autenticacion.service';
 import { TituloComponent } from "../shared/components/titulo/titulo.component";
 import { SubtituloComponent } from "../shared/components/subtitulo/subtitulo.component";
-
+import { TipoForm } from "../ligazons/types/opcionsform"
 @Component({
   selector: 'app-inicio',
   standalone: true,
@@ -14,7 +14,7 @@ import { SubtituloComponent } from "../shared/components/subtitulo/subtitulo.com
 })
 export class InicioComponent {
   opcions: string[] = ['cookies', 'usuario', 'grupos'];
-  opcionSeleccionada: string = 'cookies';
+  opcionSeleccionada: TipoForm = 'cookies';
   componente: any = FormLigazonComponent;
   usuarioConectado: boolean = false;
   eAdmin: boolean = false;
@@ -35,6 +35,7 @@ export class InicioComponent {
   }
 
   cambiarOpcion(opcion: string) {
-    this.opcionSeleccionada = opcion;
+    let op = opcion as TipoForm;
+    this.opcionSeleccionada = op;
   }
 }

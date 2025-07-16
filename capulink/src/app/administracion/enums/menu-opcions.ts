@@ -3,4 +3,5 @@ export enum MenuOpcions {
   Usuario = 'Usuarios',
   Categoria = 'Categorias',
   Grupos = 'Grupos',
+  Ligazons = 'Ligazons',
 }
