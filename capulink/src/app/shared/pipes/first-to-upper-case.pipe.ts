@@ -4,15 +4,15 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'firstToUpperCase',
   standalone: true
 })
-export class FirstToUpperCasePipe implements PipeTransform {
+export class FirstToUpperCasePipe<T extends string> implements PipeTransform {
 
-  transform(value: string, ...args: unknown[]): string {
+  transform(value: T, ...args: unknown[]): T {
     let newValue = value;
     let firstLetter = newValue.charAt(0);
 
-    newValue = newValue.replace(firstLetter, firstLetter.toUpperCase());
+    newValue = newValue.replace(firstLetter, firstLetter.toUpperCase()) as T;
 
-   
+
     return newValue;
   }
 
