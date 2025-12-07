@@ -80,7 +80,7 @@ class PerfilController extends Controller
                     return !empty($resource->resource) && $resource->toArray(request()) !== [];
                 })->values()->toArray(request());
 
-            Log::debug($ligazonsFiltradas);
+
             return response()->json([
                 'mensaxe' => 'Acceso permitido',
                 'name' => $usuario->name,

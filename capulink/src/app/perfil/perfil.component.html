@@ -1,8 +1,8 @@
 <div class="host-centrado">
-  <h1 id="titulo">Perfil de usuario</h1>
+  <h1 id="titulo" class="text-2xl mb-5">Perfil de usuario</h1>
 </div>
 <div>
-  <div *ngIf="error">
+  <div *ngIf="error" class="text-center">
     Non tes permiso para ver este perfil de usuario
   </div>
   <div class="bio flex flex-col md:flex-row items-start">
@@ -10,14 +10,16 @@
       <p class="nome">{{name}}</p>
       <img [src]="foto" class="foto">
     </div>
-    <div class="flex flex-col md:mx-6 text-center w-full border rounded">
-      <h2 class="text-2xl border-b-2">Ligazóns</h2>
+    <div class="flex flex-col md:mx-6 w-full border rounded scroll-auto">
+      <h2 class="text-2xl border-b-2 text-center">Ligazóns</h2>
+      <div class="flex flex-col m-auto max-h-96 w-full overflow-scroll items-center  justify-start">
     @for (ligazon of ligazons; track $index) {
-      <div>
+      <div class="flex flex-col w-6/12 mb-2">
         <a href="{{ligazon.url}}" class="underline mr-2" target="_blank">{{ligazon.titulo}}</a>
         <a href="{{ligazon.url}}" class="underline mr-2" target="_blank">{{ligazon.url}}</a>
       </div>
       }
+    </div>
     </div>
   </div>
 

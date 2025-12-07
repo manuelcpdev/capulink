@@ -293,7 +293,6 @@ class LigazonController extends Controller
 
     public function eliminarLigazonsUsuario(Request $request)
     {
-        Log::info($request);
         // Validación de entrada
         $validator = Validator::make($request->all(), [
             'ligazons' => 'required|array', // Debe ser un array
@@ -302,11 +301,9 @@ class LigazonController extends Controller
             'ligazons.required' => 'É necesario proporcionar as ligazóns a eliminar.',
             'ligazons.*.exists' => 'Algunhas das ligazóns especificadas non existen.',
         ]);
-        Log::info($validator->validated(), ['Validado']);
 
         // Retornar erros de validación se existen
         if ($validator->fails()) {
-            Log::error($validator->validated(), ['Error']);
             return response()->json([
                 'message' => 'Erro de validación',
                 'errors' => $validator->errors(),
@@ -319,17 +316,15 @@ class LigazonController extends Controller
         $user = User::findOrFail(Auth::user() ? Auth::id() : null);
         $ligazons = LigazonUsuario::where('user_id', $user->id)->whereIn('ligazon_id', $request->ligazons)->get();
 
-        Log::alert(json_encode($ligazons));
         try {
             DB::beginTransaction();
-            foreach($ligazons as $ligazonUsuario) {
+            foreach ($ligazons as $ligazonUsuario) {
                 $ligazon = $ligazonUsuario->ligazon;
                 $ligazonId = $ligazonUsuario->ligazon_id;
                 $existeLigazonParaUsuario = null;
                 $existeLigazonParaGrupo = null;
                 //Para cada ligazón, eliminar as súas etiquetas. Tamén, eliminar as etiquetas que queden orfas.
                 $etiquetasLigazon = $ligazonUsuario->etiquetas;
-                Log::info(json_encode($ligazonUsuario->etiquetas));
 
                 //Elimina as etiquetas asociadas a esta ligazón, pero só en usuario_ligazon_etiqueta
                 $ligazonUsuario->etiquetas()->detach();
@@ -338,15 +333,11 @@ class LigazonController extends Controller
                 $ligazonUsuario->delete();
 
                 $existeLigazonParaUsuario = LigazonUsuario::where('ligazon_id', $ligazonId)->exists();
-                $existeLigazonParaGrupo= LigazonGrupo::where('ligazon_id', $ligazonId)->exists();
-                Log::info('', ['existe_para_ligazon_usuario' => $existeLigazonParaUsuario, 'existe_para_ligazon_grupo' => $existeLigazonParaGrupo]);
-                if(!$existeLigazonParaUsuario && !$existeLigazonParaGrupo)
-                {
-                Log::info(json_encode(['Ligazón de \'ligazons\' antes de borrar', $ligazon->url]));
-                $ligazon->delete();
-                Log::info(json_encode(['Ligazón Usuario', $ligazonUsuario]));
+                $existeLigazonParaGrupo = LigazonGrupo::where('ligazon_id', $ligazonId)->exists();
+                if (!$existeLigazonParaUsuario && !$existeLigazonParaGrupo) {
 
-            }
+                    $ligazon->delete();
+                }
                 DB::commit();
             }
         } catch (Exception $e) {
