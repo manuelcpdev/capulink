@@ -13,15 +13,17 @@ Instala as dependencias
 ```
 cd frontend
 npm i
-ng serve
+npm run ng serve
 ```
 
 ## Backend
-`cd backend`
+```
+cd backend
+```
 Crear un ficherio .env (a partires do .env.example) e configuralo
 ```
 composer install
-php artisan generate:key
+php artisan key:generate
 php artisan migrate
 ```
 
